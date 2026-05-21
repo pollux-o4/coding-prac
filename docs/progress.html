@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Learning Progress</title>
     <!--
-      Derived-view boundary (issue #9).
+      Derived-view boundary (issues #9, #11).
 
       This file is a derived view over docs/PROGRESS.md. It MUST NOT carry
       learner-progress state of its own. Every value the learner sees here
@@ -15,18 +15,31 @@
       other way around.
 
       Concretely, this file is allowed to contain:
-        - Structural HTML (headings, sections, links to PROGRESS.md).
+        - Structural HTML (headings, sections, table scaffolding, links to
+          PROGRESS.md and other docs).
         - Loader / parser logic that reads PROGRESS.md at load time.
-        - Static labels ("Overall progress", "Next learning step", etc.).
+        - Static labels ("Overall progress", "Per-topic state",
+          "Latest session", "Language implementation state",
+          "Practice / interview-review state", and the four language
+          row labels Python / Java / C / TypeScript that come from the
+          curriculum rotation, not from any specific topic's data).
       This file is NOT allowed to contain:
         - Hard-coded current week, current topic, per-topic status, next
-          checkpoint text, or any other field listed in PROGRESS.md's
-          "Minimum per-topic fields" or "Current state" sections.
+          checkpoint text, language status flags, evidence link targets,
+          counts, or any other field listed in PROGRESS.md's "Minimum
+          per-topic fields" or "Current state" sections.
         - A copy of any evidence link, count, or status that PROGRESS.md
           already carries.
+        - Any link into docs/sessions/, implementations/, or solutions/.
+          Those links exist only after they have been parsed out of
+          PROGRESS.md at load time. The session-summary file itself is
+          never fetched here - the boundary is one level: progress.html
+          reads PROGRESS.md, and only PROGRESS.md, and surfaces whatever
+          links PROGRESS.md already carries.
       A reviewer can verify the boundary by searching this file for any of
       those PROGRESS.md field values; none should appear outside of the
-      runtime-rendered DOM.
+      runtime-rendered DOM. The boundary-check self-test in the script
+      block below also asserts this at load time.
     -->
     <style>
       :root {
@@ -35,7 +48,7 @@
         line-height: 1.5;
       }
       body { margin: 0; padding: 2rem 1rem; }
-      main { max-width: 44rem; margin: 0 auto; }
+      main { max-width: 52rem; margin: 0 auto; }
       h1 { margin-top: 0; }
       .source-note {
         font-size: 0.9rem;
@@ -62,6 +75,45 @@
         margin-top: 0.25rem;
       }
       .status.error { color: #b3261e; opacity: 1; }
+      .empty {
+        font-style: italic;
+        opacity: 0.7;
+      }
+      .topic-card {
+        padding: 0.75rem 1rem;
+        background: rgba(127,127,127,0.06);
+        border-left: 3px solid rgba(127,127,127,0.4);
+        border-radius: 0.25rem;
+        margin-bottom: 1rem;
+      }
+      .topic-card h3 {
+        margin: 0 0 0.5rem 0;
+        font-size: 1.05rem;
+      }
+      .topic-card table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.92rem;
+      }
+      .topic-card th, .topic-card td {
+        text-align: left;
+        padding: 0.25rem 0.4rem;
+        vertical-align: top;
+        border-bottom: 1px solid rgba(127,127,127,0.18);
+      }
+      .topic-card th {
+        white-space: nowrap;
+        font-weight: 600;
+        width: 14rem;
+        opacity: 0.85;
+      }
+      .topic-card tr:last-child th,
+      .topic-card tr:last-child td {
+        border-bottom: none;
+      }
+      .topic-card td .multi-link a {
+        margin-right: 0.5rem;
+      }
       footer {
         margin-top: 2.5rem;
         padding-top: 1rem;
@@ -77,7 +129,9 @@
       <p class="source-note">
         Derived view of <a href="./PROGRESS.md">PROGRESS.md</a>, which is the
         source of truth. If this view and <code>PROGRESS.md</code> disagree,
-        <code>PROGRESS.md</code> wins.
+        <code>PROGRESS.md</code> wins. This page does not store learner
+        state; it parses <code>PROGRESS.md</code> at load time and renders
+        whatever fields it finds.
       </p>
 
       <section>
@@ -90,6 +144,13 @@
         <div class="value" id="next-step">Loading from PROGRESS.md...</div>
       </section>
 
+      <section>
+        <h2>Per-topic state</h2>
+        <div id="topics">
+          <div class="value">Loading from PROGRESS.md...</div>
+        </div>
+      </section>
+
       <p class="status" id="status"></p>
 
       <footer>
@@ -98,24 +159,74 @@
         appears here, update <code>PROGRESS.md</code> through the close-out
         path in
         <a href="./LEARNING_FLOW.md">LEARNING_FLOW.md</a> (Phase 3, step 5)
-        and reload this page.
+        and reload this page. The per-topic state shown above mirrors the
+        seven minimum per-topic fields defined in PROGRESS.md's
+        "Minimum per-topic fields" section; the four language rows
+        (Python, Java, C, TypeScript) follow the curriculum rotation.
       </footer>
     </main>
 
     <script>
-      // Derived-view loader.
-      // Reads docs/PROGRESS.md and extracts two minimal pieces:
+      // Derived-view loader (issues #9, #11).
+      //
+      // Reads docs/PROGRESS.md and extracts:
       //   - Overall progress (the "Current state" section body).
       //   - Next learning step (the most recent "next checkpoint" value
-      //     in the Current state section, or - when no topic has started -
-      //     the curriculum-implied first step that PROGRESS.md spells out).
-      // No learner state is kept here; if PROGRESS.md cannot be loaded the
-      // user is sent back to PROGRESS.md directly. That fallback IS the
-      // derived-view boundary in action: this page refuses to invent state.
+      //     inside the Current state section, or - when no topic has
+      //     started - the curriculum-implied first step that PROGRESS.md
+      //     spells out).
+      //   - Per-topic state: for every per-topic block under "Current
+      //     state", surface PROGRESS.md's seven minimum per-topic fields
+      //     (Current state, Next checkpoint, Topic material, Latest
+      //     session, Implementation evidence, Solution evidence,
+      //     Interview / review evidence). Language implementation state
+      //     is rendered as a Python / Java / C / TypeScript breakdown
+      //     of the "Implementation evidence" field; practice and
+      //     interview-review state is the "Solution evidence" and
+      //     "Interview / review evidence" fields. The language row
+      //     labels are static labels, not learner data.
+      //
+      // No learner state is kept in this file. If PROGRESS.md cannot be
+      // loaded the user is sent back to PROGRESS.md directly. That
+      // fallback IS the derived-view boundary in action: this page
+      // refuses to invent state.
+      //
+      // The boundary also limits fetch scope to PROGRESS.md alone. This
+      // file MUST NOT fetch docs/sessions/*.md, topic READMEs, or any
+      // implementation / solution file. PROGRESS.md already carries the
+      // one-line "Latest session" link per topic; surfacing that link
+      // here is the full extent of the recent-session context this view
+      // is allowed to render. A reader who wants the session body
+      // follows the link.
 
       const overallEl = document.getElementById("overall");
       const nextStepEl = document.getElementById("next-step");
+      const topicsEl = document.getElementById("topics");
       const statusEl = document.getElementById("status");
+
+      // Boundary self-test: before any fetch happens, the page must not
+      // already contain rendered learner-progress text. The placeholders
+      // all say "Loading from PROGRESS.md..." or are empty. If a future
+      // edit accidentally inlines learner state into the static HTML,
+      // this assertion fires before the fetch overwrites it.
+      (function assertNoInlinedState() {
+        const placeholder = "Loading from PROGRESS.md...";
+        const overallText = overallEl.textContent.trim();
+        const nextText = nextStepEl.textContent.trim();
+        const topicsText = topicsEl.textContent.trim();
+        const ok =
+          overallText === placeholder &&
+          nextText === placeholder &&
+          topicsText === placeholder;
+        if (!ok) {
+          // eslint-disable-next-line no-console
+          console.warn(
+            "[progress.html] derived-view boundary check: pre-fetch DOM " +
+            "should only carry placeholders, but found rendered text. " +
+            "Inspect the static HTML for inlined learner state."
+          );
+        }
+      })();
 
       function showFallback(reason) {
         const msg =
@@ -127,6 +238,13 @@
         nextStepEl.textContent =
           "See PROGRESS.md \"Current state\" section and the " +
           "\"next checkpoint\" field of the current topic.";
+        topicsEl.innerHTML = "";
+        const fallbackTopics = document.createElement("div");
+        fallbackTopics.className = "value";
+        fallbackTopics.textContent =
+          "See PROGRESS.md \"Current state\" section for the per-topic " +
+          "rows and their seven minimum fields.";
+        topicsEl.appendChild(fallbackTopics);
         statusEl.textContent = msg;
         statusEl.classList.add("error");
       }
@@ -150,8 +268,8 @@
 
       // Find a "next checkpoint" value inside the Current state section.
       // PROGRESS.md's contract puts this either in a per-topic table row
-      // or, when no topic has started, as prose describing what the first
-      // close-out will produce. We surface whichever is present.
+      // or, when no topic has started, as prose describing what the
+      // first close-out will produce. We surface whichever is present.
       function extractNextStep(currentState) {
         if (!currentState) return null;
         // Per-topic table row form: "| Next checkpoint | <value> | ..."
@@ -159,9 +277,286 @@
           /\|\s*Next checkpoint\s*\|\s*([^|]+?)\s*\|/i
         );
         if (rowMatch) return rowMatch[1].trim();
-        // Otherwise, return the prose body as-is. It already reads as the
-        // next step when no topic has started yet.
+        // Otherwise, return the prose body as-is. It already reads as
+        // the next step when no topic has started yet.
         return currentState;
+      }
+
+      // Extract per-topic blocks from the Current state section.
+      //
+      // PROGRESS.md's contract (see "Minimum per-topic fields") puts one
+      // row per started topic under "## Current state". Each topic block
+      // is introduced by an "### <Topic name>" heading and carries the
+      // seven minimum fields as either a Markdown table or a labeled
+      // list. We accept both shapes - the contract names the fields, not
+      // the rendering - and surface whichever field values are present.
+      //
+      // Returns an array of { name, fields } where fields is a
+      // case-insensitive map of field-label -> raw markdown value. If
+      // the section is the no-topic-yet prose, returns [].
+      function extractTopicBlocks(currentState) {
+        if (!currentState) return [];
+        const lines = currentState.split(/\r?\n/);
+        const topics = [];
+        let cursor = 0;
+        // Skip any preamble before the first "### " heading.
+        while (cursor < lines.length && !/^###\s+/.test(lines[cursor])) {
+          cursor++;
+        }
+        while (cursor < lines.length) {
+          const headingMatch = lines[cursor].match(/^###\s+(.*\S)\s*$/);
+          if (!headingMatch) { cursor++; continue; }
+          const name = headingMatch[1].trim();
+          cursor++;
+          const bodyStart = cursor;
+          while (cursor < lines.length && !/^###\s+/.test(lines[cursor])) {
+            cursor++;
+          }
+          const body = lines.slice(bodyStart, cursor).join("\n");
+          topics.push({ name, fields: parseTopicFields(body) });
+        }
+        return topics;
+      }
+
+      // Parse a topic block body into a field map.
+      //
+      // Supported shapes (both are mentioned in PROGRESS.md's contract
+      // language - "table row" and labeled-field):
+      //   Markdown table: "| Field | Value |" rows, with a header row.
+      //   Labeled list:   "- **Field:** value" or "**Field:** value".
+      function parseTopicFields(body) {
+        const fields = {};
+        const lines = body.split(/\r?\n/);
+        for (const raw of lines) {
+          const line = raw.trim();
+          if (!line) continue;
+          // Table row form (skip header / separator rows).
+          if (line.startsWith("|") && line.endsWith("|")) {
+            const cells = line.slice(1, -1).split("|").map(c => c.trim());
+            if (cells.length < 2) continue;
+            const label = cells[0];
+            const value = cells.slice(1).join(" | ").trim();
+            if (!label || /^[-: ]+$/.test(label)) continue;
+            if (/^field$/i.test(label)) continue;
+            fields[label.toLowerCase()] = value;
+            continue;
+          }
+          // Labeled-list form: "- **Field:** value" or "**Field:** value"
+          const labeled = line.match(
+            /^-?\s*\*\*([^*]+?):?\*\*\s*:?\s*(.*)$/
+          );
+          if (labeled) {
+            const label = labeled[1].trim();
+            const value = labeled[2].trim();
+            if (label) fields[label.toLowerCase()] = value;
+          }
+        }
+        return fields;
+      }
+
+      // Pull markdown links "[text](href)" out of a value string into an
+      // array of { text, href }. Bare text without links yields []. This
+      // is what lets the language-implementation row separate the four
+      // languages: PROGRESS.md's contract puts one link per language in
+      // the "Implementation evidence" field.
+      function extractMarkdownLinks(value) {
+        if (!value) return [];
+        const out = [];
+        const re = /\[([^\]]+)\]\(([^)]+)\)/g;
+        let m;
+        while ((m = re.exec(value)) !== null) {
+          out.push({ text: m[1].trim(), href: m[2].trim() });
+        }
+        return out;
+      }
+
+      // Decide which language a single evidence link belongs to. The
+      // canonical implementation path is
+      //   implementations/<language>/<topic-slug>/...
+      // (see ARTIFACT_POLICY.md). We also accept the language name in
+      // the link text as a fallback so a labeled link like
+      // "[Python](...)" lands correctly even if the path is unusual.
+      function classifyImplLanguage(link) {
+        const langs = ["python", "java", "c", "typescript"];
+        const path = (link.href || "").toLowerCase();
+        for (const lang of langs) {
+          if (path.includes("implementations/" + lang + "/")) return lang;
+          if (path.includes("/" + lang + "/")) return lang;
+        }
+        const text = (link.text || "").toLowerCase();
+        for (const lang of langs) {
+          if (text === lang) return lang;
+          if (text.startsWith(lang + " ")) return lang;
+        }
+        return null;
+      }
+
+      // Build a sub-table that breaks the "Implementation evidence"
+      // field down by language. Languages without a link are rendered
+      // as "-" - PROGRESS.md's contract allows "none yet" rows, and
+      // this view mirrors that without inventing data.
+      function buildImplStateCell(value) {
+        const wrap = document.createElement("div");
+        const links = extractMarkdownLinks(value);
+        const byLang = { python: [], java: [], c: [], typescript: [] };
+        for (const link of links) {
+          const lang = classifyImplLanguage(link);
+          if (lang && byLang[lang]) byLang[lang].push(link);
+        }
+        const table = document.createElement("table");
+        const labels = [
+          ["python", "Python"],
+          ["java", "Java"],
+          ["c", "C"],
+          ["typescript", "TypeScript"],
+        ];
+        for (const [key, label] of labels) {
+          const tr = document.createElement("tr");
+          const th = document.createElement("th");
+          th.textContent = label;
+          th.style.width = "8rem";
+          const td = document.createElement("td");
+          const langLinks = byLang[key];
+          if (langLinks.length === 0) {
+            const dash = document.createElement("span");
+            dash.className = "empty";
+            dash.textContent = "-";
+            td.appendChild(dash);
+          } else {
+            const multi = document.createElement("span");
+            multi.className = "multi-link";
+            for (const link of langLinks) {
+              const a = document.createElement("a");
+              a.href = link.href;
+              a.textContent = link.text;
+              multi.appendChild(a);
+            }
+            td.appendChild(multi);
+          }
+          tr.appendChild(th);
+          tr.appendChild(td);
+          table.appendChild(tr);
+        }
+        // If the source value carried prose alongside links (for
+        // example a running count), surface that too so PROGRESS.md
+        // stays the source of truth for any extra context.
+        const prose = value.replace(/\[([^\]]+)\]\(([^)]+)\)/g, "").trim();
+        if (prose) {
+          const note = document.createElement("div");
+          note.style.fontSize = "0.85rem";
+          note.style.opacity = "0.75";
+          note.style.marginTop = "0.25rem";
+          note.textContent = prose;
+          wrap.appendChild(note);
+        }
+        wrap.appendChild(table);
+        return wrap;
+      }
+
+      // Render a field value into a table cell. Markdown links inside
+      // the value become anchors; anything else is rendered as text. We
+      // do NOT follow any link - this is the recent-session-context
+      // rule from issue #11: surface the link, do not fetch it.
+      function renderFieldValue(td, value) {
+        if (!value || !value.trim()) {
+          const dash = document.createElement("span");
+          dash.className = "empty";
+          dash.textContent = "-";
+          td.appendChild(dash);
+          return;
+        }
+        const re = /\[([^\]]+)\]\(([^)]+)\)/g;
+        let lastIndex = 0;
+        let m;
+        let foundAny = false;
+        while ((m = re.exec(value)) !== null) {
+          foundAny = true;
+          if (m.index > lastIndex) {
+            td.appendChild(
+              document.createTextNode(value.slice(lastIndex, m.index))
+            );
+          }
+          const a = document.createElement("a");
+          a.href = m[2].trim();
+          a.textContent = m[1].trim();
+          td.appendChild(a);
+          lastIndex = re.lastIndex;
+        }
+        if (!foundAny) {
+          td.textContent = value;
+          return;
+        }
+        if (lastIndex < value.length) {
+          td.appendChild(document.createTextNode(value.slice(lastIndex)));
+        }
+      }
+
+      // Render the per-topic state list. The seven minimum fields are
+      // shown in the order PROGRESS.md's contract lists them; the
+      // language implementation state is the breakdown of
+      // "Implementation evidence". Missing fields are rendered as "-".
+      function renderTopics(topics) {
+        topicsEl.innerHTML = "";
+        if (!topics || topics.length === 0) {
+          const empty = document.createElement("div");
+          empty.className = "value empty";
+          empty.textContent =
+            "No topics started yet. PROGRESS.md \"Current state\" " +
+            "carries the curriculum-implied first step; once the first " +
+            "close-out writes a per-topic row, it will appear here.";
+          topicsEl.appendChild(empty);
+          return;
+        }
+        // PROGRESS.md "Minimum per-topic fields" order.
+        const fieldOrder = [
+          "current state",
+          "next checkpoint",
+          "topic material",
+          "latest session",
+          "implementation evidence",
+          "solution evidence",
+          "interview / review evidence",
+        ];
+        const displayLabels = {
+          "current state": "Current state",
+          "next checkpoint": "Next checkpoint",
+          "topic material": "Topic material",
+          "latest session": "Latest session (recent-session context)",
+          "implementation evidence":
+            "Language implementation state",
+          "solution evidence": "Practice (solution) evidence",
+          "interview / review evidence": "Interview / review evidence",
+        };
+        for (const topic of topics) {
+          const card = document.createElement("div");
+          card.className = "topic-card";
+          const h3 = document.createElement("h3");
+          h3.textContent = topic.name;
+          card.appendChild(h3);
+          const table = document.createElement("table");
+          for (const key of fieldOrder) {
+            const tr = document.createElement("tr");
+            const th = document.createElement("th");
+            th.textContent = displayLabels[key];
+            const td = document.createElement("td");
+            const value = topic.fields[key];
+            if (key === "implementation evidence") {
+              if (value && value.trim()) {
+                td.appendChild(buildImplStateCell(value));
+              } else {
+                const wrap = buildImplStateCell("");
+                td.appendChild(wrap);
+              }
+            } else {
+              renderFieldValue(td, value);
+            }
+            tr.appendChild(th);
+            tr.appendChild(td);
+            table.appendChild(tr);
+          }
+          card.appendChild(table);
+          topicsEl.appendChild(card);
+        }
       }
 
       async function load() {
@@ -187,8 +582,13 @@
         const nextStep = extractNextStep(currentState);
         nextStepEl.textContent = nextStep ||
           "PROGRESS.md does not record a next checkpoint yet.";
+        const topics = extractTopicBlocks(currentState);
+        renderTopics(topics);
         statusEl.textContent =
-          "Rendered from PROGRESS.md at " + new Date().toISOString() + ".";
+          "Rendered from PROGRESS.md at " + new Date().toISOString() +
+          ". This view fetches PROGRESS.md only; session summaries, " +
+          "implementation files, and solution files are linked but " +
+          "not fetched.";
       }
 
       load();
