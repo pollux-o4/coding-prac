@@ -4,12 +4,194 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Learning Progress</title>
+    <!--
+      Derived-view boundary (issue #9).
+
+      This file is a derived view over docs/PROGRESS.md. It MUST NOT carry
+      learner-progress state of its own. Every value the learner sees here
+      is read at load time from PROGRESS.md (the source of truth defined in
+      docs/PROGRESS.md "Contract"). If this file disagrees with PROGRESS.md,
+      PROGRESS.md wins and this file is regenerated against it - never the
+      other way around.
+
+      Concretely, this file is allowed to contain:
+        - Structural HTML (headings, sections, links to PROGRESS.md).
+        - Loader / parser logic that reads PROGRESS.md at load time.
+        - Static labels ("Overall progress", "Next learning step", etc.).
+      This file is NOT allowed to contain:
+        - Hard-coded current week, current topic, per-topic status, next
+          checkpoint text, or any other field listed in PROGRESS.md's
+          "Minimum per-topic fields" or "Current state" sections.
+        - A copy of any evidence link, count, or status that PROGRESS.md
+          already carries.
+      A reviewer can verify the boundary by searching this file for any of
+      those PROGRESS.md field values; none should appear outside of the
+      runtime-rendered DOM.
+    -->
+    <style>
+      :root {
+        color-scheme: light dark;
+        font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+        line-height: 1.5;
+      }
+      body { margin: 0; padding: 2rem 1rem; }
+      main { max-width: 44rem; margin: 0 auto; }
+      h1 { margin-top: 0; }
+      .source-note {
+        font-size: 0.9rem;
+        opacity: 0.8;
+        margin-bottom: 1.5rem;
+      }
+      section { margin: 1.5rem 0; }
+      section h2 {
+        font-size: 1.05rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin-bottom: 0.4rem;
+      }
+      .value {
+        padding: 0.75rem 1rem;
+        background: rgba(127,127,127,0.08);
+        border-left: 3px solid rgba(127,127,127,0.4);
+        border-radius: 0.25rem;
+        white-space: pre-wrap;
+      }
+      .status {
+        font-size: 0.85rem;
+        opacity: 0.7;
+        margin-top: 0.25rem;
+      }
+      .status.error { color: #b3261e; opacity: 1; }
+      footer {
+        margin-top: 2.5rem;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(127,127,127,0.3);
+        font-size: 0.85rem;
+        opacity: 0.75;
+      }
+    </style>
   </head>
   <body>
     <main>
       <h1>Learning Progress</h1>
-      <p>This stable entrypoint will show the local derived progress view.</p>
-      <p><a href="./PROGRESS.md">PROGRESS.md</a> is the source of truth.</p>
+      <p class="source-note">
+        Derived view of <a href="./PROGRESS.md">PROGRESS.md</a>, which is the
+        source of truth. If this view and <code>PROGRESS.md</code> disagree,
+        <code>PROGRESS.md</code> wins.
+      </p>
+
+      <section>
+        <h2>Overall progress</h2>
+        <div class="value" id="overall">Loading from PROGRESS.md...</div>
+      </section>
+
+      <section>
+        <h2>Next learning step</h2>
+        <div class="value" id="next-step">Loading from PROGRESS.md...</div>
+      </section>
+
+      <p class="status" id="status"></p>
+
+      <footer>
+        This page is derived from <a href="./PROGRESS.md">PROGRESS.md</a> at
+        load time. It does not store learner-progress state. To change what
+        appears here, update <code>PROGRESS.md</code> through the close-out
+        path in
+        <a href="./LEARNING_FLOW.md">LEARNING_FLOW.md</a> (Phase 3, step 5)
+        and reload this page.
+      </footer>
     </main>
+
+    <script>
+      // Derived-view loader.
+      // Reads docs/PROGRESS.md and extracts two minimal pieces:
+      //   - Overall progress (the "Current state" section body).
+      //   - Next learning step (the most recent "next checkpoint" value
+      //     in the Current state section, or - when no topic has started -
+      //     the curriculum-implied first step that PROGRESS.md spells out).
+      // No learner state is kept here; if PROGRESS.md cannot be loaded the
+      // user is sent back to PROGRESS.md directly. That fallback IS the
+      // derived-view boundary in action: this page refuses to invent state.
+
+      const overallEl = document.getElementById("overall");
+      const nextStepEl = document.getElementById("next-step");
+      const statusEl = document.getElementById("status");
+
+      function showFallback(reason) {
+        const msg =
+          "Could not load PROGRESS.md from this page (" + reason + "). " +
+          "Open PROGRESS.md directly, or serve this folder over a local " +
+          "HTTP server (for example: python -m http.server) and reload.";
+        overallEl.textContent =
+          "See PROGRESS.md \"Current state\" section.";
+        nextStepEl.textContent =
+          "See PROGRESS.md \"Current state\" section and the " +
+          "\"next checkpoint\" field of the current topic.";
+        statusEl.textContent = msg;
+        statusEl.classList.add("error");
+      }
+
+      // Pull the body of a top-level "## <name>" section out of the
+      // PROGRESS.md text. Returns the trimmed section body, or null.
+      function extractSection(md, name) {
+        const lines = md.split(/\r?\n/);
+        const header = "## " + name;
+        let start = -1;
+        for (let i = 0; i < lines.length; i++) {
+          if (lines[i].trim() === header) { start = i + 1; break; }
+        }
+        if (start === -1) return null;
+        let end = lines.length;
+        for (let i = start; i < lines.length; i++) {
+          if (/^##\s/.test(lines[i])) { end = i; break; }
+        }
+        return lines.slice(start, end).join("\n").trim() || null;
+      }
+
+      // Find a "next checkpoint" value inside the Current state section.
+      // PROGRESS.md's contract puts this either in a per-topic table row
+      // or, when no topic has started, as prose describing what the first
+      // close-out will produce. We surface whichever is present.
+      function extractNextStep(currentState) {
+        if (!currentState) return null;
+        // Per-topic table row form: "| Next checkpoint | <value> | ..."
+        const rowMatch = currentState.match(
+          /\|\s*Next checkpoint\s*\|\s*([^|]+?)\s*\|/i
+        );
+        if (rowMatch) return rowMatch[1].trim();
+        // Otherwise, return the prose body as-is. It already reads as the
+        // next step when no topic has started yet.
+        return currentState;
+      }
+
+      async function load() {
+        let res;
+        try {
+          res = await fetch("./PROGRESS.md", { cache: "no-store" });
+        } catch (err) {
+          showFallback("fetch blocked, likely file:// origin");
+          return;
+        }
+        if (!res.ok) {
+          showFallback("HTTP " + res.status);
+          return;
+        }
+        const md = await res.text();
+        const currentState = extractSection(md, "Current state");
+        if (currentState) {
+          overallEl.textContent = currentState;
+        } else {
+          overallEl.textContent =
+            "PROGRESS.md has no \"Current state\" section yet.";
+        }
+        const nextStep = extractNextStep(currentState);
+        nextStepEl.textContent = nextStep ||
+          "PROGRESS.md does not record a next checkpoint yet.";
+        statusEl.textContent =
+          "Rendered from PROGRESS.md at " + new Date().toISOString() + ".";
+      }
+
+      load();
+    </script>
   </body>
 </html>
