@@ -1,194 +1,89 @@
-# Learning Flow
+# 학습 플로우 (Learning Flow)
 
-This is the stable entrypoint for the AI-guided learning session flow. Every
-session - whether driven by the learner alone or paired with an AI tutor -
-follows the same shape: choose the next checkpoint, generate only the topic
-material that the checkpoint needs, then close with durable artifacts and a
-refreshed progress view.
+이 문서는 AI 가이드 학습 세션 (Session) 플로우의 안정적인 진입점이다. 학습자가 혼자 진행하든 AI 튜터와 짝지어 진행하든, 모든 세션은 동일한 형태를 따른다. 다음 학습 지점 (Checkpoint) 을 고르고, 그 학습 지점이 필요로 하는 학습 자료 (Topic material) 만 생성한 뒤, 지속 가능한 산출물과 새로 갱신된 진행 상태 뷰 (Progress view) 로 세션을 마감 (close-out) 한다.
 
-The flow is intentionally short. It exists so that two consecutive sessions
-do not invent two different ways of working, and so that just-in-time material
-generation never drifts into pre-generation.
+플로우는 일부러 짧게 유지한다. 두 번의 연속된 세션이 서로 다른 방식으로 일하지 않게 하고, 적시 생성 (just-in-time) 자료 생성이 사전 생성으로 흘러가지 않도록 막는 것이 목적이다.
 
-## Inputs to every session
+## 모든 세션의 입력값
 
-A session does not start from scratch. It opens against four stable inputs:
+세션은 맨바닥에서 시작하지 않는다. 다음 네 가지 안정적인 입력값을 기준으로 열린다.
 
-1. The curriculum in [CURRICULUM.md](CURRICULUM.md) - study order, weekly
-   path, language rotation (Python primary, then Java / C / TypeScript), and
-   the per-topic definition of done.
-2. The progress state in [PROGRESS.md](PROGRESS.md) - current week, current
-   topic, language coverage so far, evidence links, and the next checkpoint
-   recorded at the end of the previous session.
-3. Any durable topic material already accumulated under `docs/topics/` -
-   concept explanations, language-comparison notes, and links from prior
-   sessions on the same topic.
-4. The topic format in [TOPIC_FORMAT.md](TOPIC_FORMAT.md) - the shape any
-   newly written topic material must conform to before it is promoted.
+1. [CURRICULUM.md](CURRICULUM.md) 에 정의된 커리큘럼 — 학습 순서, 주차별 경로, 언어 로테이션 (Python 우선, 이후 Java / C / TypeScript), 그리고 학습 단위 (Topic) 별 완료 정의.
+2. [PROGRESS.md](PROGRESS.md) 의 진행 상태 — 현재 주차, 현재 학습 단위, 지금까지의 언어 커버리지, 증거 링크, 그리고 이전 세션 마지막에 기록된 다음 학습 지점.
+3. `docs/topics/` 아래에 이미 쌓여 있는 지속 가능한 학습 자료 — 개념 설명, 언어 간 비교 노트, 같은 학습 단위에 대한 이전 세션의 링크들.
+4. [TOPIC_FORMAT.md](TOPIC_FORMAT.md) 에 정의된 학습 단위 포맷 — 새로 작성되는 학습 자료가 승격 (Promotion) 되기 전에 따라야 할 형태.
 
-If any of these inputs is missing or inconsistent, the session resolves that
-first and does not start studying.
+이 입력값 중 하나라도 빠져 있거나 일관성이 깨져 있다면, 세션은 먼저 그것을 해결하고 학습을 시작하지 않는다.
 
-## Phase 1 - Select the next checkpoint
+## Phase 1 — 다음 학습 지점 선택
 
-The session selects exactly one next checkpoint by reconciling the curriculum
-with the current progress state. The intent is to make this step mechanical
-so the learner does not have to re-plan at the start of every session.
+세션은 커리큘럼과 현재 진행 상태를 맞춰 보면서 정확히 하나의 다음 학습 지점을 고른다. 이 단계는 의도적으로 기계적으로 굴러가도록 설계되어 있다. 매 세션 시작마다 학습자가 다시 계획을 짤 필요가 없게 하려는 것이다.
 
-The selection rules, applied in order:
+선택 규칙은 다음 순서로 적용한다.
 
-1. **Honor the "next checkpoint" field in `PROGRESS.md`** if it is present
-   and still valid against the curriculum. The previous session is the
-   authority on what comes next.
-2. **Otherwise, locate the current position in the curriculum.** Use the
-   current week from `PROGRESS.md` and walk the week's day-range from
-   [CURRICULUM.md](CURRICULUM.md) until the first item whose definition of
-   done is not yet satisfied.
-3. **Apply the per-topic definition of done** from `CURRICULUM.md` to decide
-   whether the current topic is finished or whether it still needs another
-   pass (for example, a missing secondary-language implementation, or fewer
-   than three interview-style answers).
-4. **Respect the language rotation.** Within a topic, concept comes first,
-   then Python, then one of Java / C / TypeScript. A session does not jump
-   ahead to a new topic while the current topic's Python implementation is
-   missing.
-5. **Prefer the smallest unit of progress that still advances a weekly
-   checkpoint.** If the week's checkpoint requires "at least five tree
-   traversal problems solved", the next checkpoint is the next single problem
-   or the next single missing language implementation, not the full
-   checkpoint at once.
-6. **Fall back to the curriculum's priorities** (data structures and
-   algorithms first, OS as a supporting topic, interview practice as the
-   third track) when more than one candidate checkpoint exists.
+1. **`PROGRESS.md` 의 "next checkpoint" 필드를 우선 존중한다.** 해당 값이 존재하고 커리큘럼 기준으로 여전히 유효하다면 그대로 따른다. 다음에 무엇을 할지에 대한 권위는 이전 세션에 있다.
+2. **그렇지 않다면 커리큘럼 상에서 현재 위치를 찾는다.** `PROGRESS.md` 의 현재 주차를 사용해 [CURRICULUM.md](CURRICULUM.md) 의 해당 주차 일정을 훑고, 완료 정의가 아직 충족되지 않은 첫 항목을 찾는다.
+3. **`CURRICULUM.md` 의 학습 단위별 완료 정의를 적용한다.** 현재 학습 단위가 끝났는지, 아니면 한 번 더 손이 가야 하는지 (예: 보조 언어 구현이 빠져 있거나, 인터뷰식 답변이 세 개 미만인 경우) 판단한다.
+4. **언어 로테이션을 지킨다.** 한 학습 단위 안에서 개념이 먼저, 그다음이 Python, 그다음이 Java / C / TypeScript 중 하나다. 현재 학습 단위의 Python 구현이 빠진 상태에서 새로운 학습 단위로 건너뛰지 않는다.
+5. **주차 학습 지점을 진전시키되 가능한 한 작은 단위를 고른다.** 주차의 학습 지점이 "트리 순회 문제 최소 5개 풀이" 라면, 다음 학습 지점은 학습 지점 전체를 한꺼번에가 아니라 다음 한 문제, 또는 빠진 다음 언어 구현 하나다.
+6. **후보가 여럿이라면 커리큘럼의 우선순위로 떨어뜨린다** (자료구조와 알고리즘이 먼저, OS 는 보조 학습 단위, 인터뷰 연습은 세 번째 트랙).
 
-The output of this phase is a single, written-down next checkpoint: a topic,
-the artifact the session intends to produce (a concept note, a Python
-implementation, a re-implementation in another language, a set of problem
-solutions, or an interview-question pass), and the acceptance criterion that
-will mark this checkpoint as done.
+이 단계의 산출물은 글로 적힌 단 하나의 다음 학습 지점이다. 학습 단위, 세션이 만들어 낼 산출물 (개념 노트, Python 구현, 다른 언어로의 재구현, 문제 풀이 묶음, 또는 인터뷰 문항 한 회차), 그리고 이 학습 지점을 완료로 표시할 수용 기준이 포함된다.
 
-## Phase 2 - Just-in-time topic material generation
+## Phase 2 — 적시 학습 자료 생성
 
-Topic material is generated only when the next checkpoint actually needs it,
-and only at the granularity the checkpoint requires. This is the single most
-important constraint of the system, because pre-generating material is how
-learning systems silently turn into reference manuals nobody reads.
+학습 자료는 다음 학습 지점이 실제로 필요로 할 때만, 그리고 학습 지점이 요구하는 정확한 단위로만 생성한다. 이것이 이 시스템의 가장 중요한 제약이다. 자료를 미리 만들어 두는 순간, 학습 시스템은 조용히 아무도 읽지 않는 레퍼런스 매뉴얼로 변해 버리기 때문이다.
 
-### Where just-in-time generation happens
+### 적시 생성이 일어나는 위치
 
-Just-in-time generation runs inside the session, after Phase 1 has fixed the
-next checkpoint and before any implementation or problem solving begins.
+적시 생성은 세션 안에서, Phase 1 이 다음 학습 지점을 확정한 뒤 그리고 어떤 구현이나 문제 풀이가 시작되기 전에 일어난다.
 
-For the selected topic:
+선택된 학습 단위에 대해:
 
-- If a `docs/topics/<topic-slug>/` folder already exists, the session reads
-  the existing material first and only generates the missing slice that the
-  current checkpoint needs - for example, a Java re-implementation note when
-  Python and the concept already exist.
-- If the topic folder does not yet exist, the session creates it from the
-  scaffold (minimal `README.md` placeholder following
-  [TOPIC_FORMAT.md](TOPIC_FORMAT.md)) and then generates only the section
-  that supports the current checkpoint (typically the concept explanation
-  plus the first language - Python - that the topic is being studied in).
-- Generated content is staged as draft inside the session. Promotion to the
-  topic's durable `README.md` happens in Phase 3, after the learner has
-  worked with it.
+- `docs/topics/<topic-slug>/` 폴더가 이미 존재한다면, 세션은 먼저 기존 자료를 읽고 현재 학습 지점이 필요로 하는 빠진 조각만 생성한다. 예를 들어 Python 과 개념은 이미 있고 Java 재구현 노트만 필요한 경우다.
+- 학습 단위 폴더가 아직 없다면, 세션은 스캐폴드 ([TOPIC_FORMAT.md](TOPIC_FORMAT.md) 를 따르는 최소 `README.md` 자리표시자 (placeholder)) 로 폴더를 만들고, 현재 학습 지점을 뒷받침하는 섹션만 생성한다 (보통은 개념 설명에 더해 학습 단위가 처음 학습되는 첫 언어 — Python).
+- 생성된 내용은 세션 내부에서 초안 상태로 둔다. 학습 단위의 지속 가능한 `README.md` 로 승격되는 것은 학습자가 그 내용을 직접 다뤄 본 뒤, Phase 3 에서 이뤄진다.
 
-### What must not be pre-generated
+### 사전 생성하면 안 되는 것들
 
-The following are explicitly out of scope for just-in-time generation in this
-flow, even when it would be cheap to ask the AI to produce them:
+다음 항목들은 — 비록 AI 한테 만들어 달라고 하는 비용이 싸더라도 — 이 플로우의 적시 생성 범위에서 명시적으로 제외된다.
 
-- Topic material for topics that are not the current next checkpoint. The
-  scaffold creates folders and placeholders, not bodies of explanation.
-- Sections of the current topic that the current checkpoint does not need -
-  for example, the Java and C re-implementations when the checkpoint is only
-  to land the Python implementation.
-- Interview questions and problem sets for topics the learner has not yet
-  studied at the concept level.
-- "Just-in-case" alternative explanations, extra examples, or extended
-  trade-off discussion beyond what the checkpoint's acceptance criterion
-  requires.
-- Bulk batches of topic material across multiple weeks of the curriculum at
-  once. The curriculum is the schedule; the topic folders are not a
-  pre-built textbook.
+- 현재 다음 학습 지점이 아닌 학습 단위에 대한 학습 자료. 스캐폴드는 폴더와 자리표시자를 만들 뿐, 본문을 채우지는 않는다.
+- 현재 학습 단위 안에서도 현재 학습 지점이 요구하지 않는 섹션. 예를 들어 학습 지점이 Python 구현 하나를 끝내는 것뿐이라면, Java 와 C 재구현은 생성하지 않는다.
+- 학습자가 아직 개념 수준으로 다루지 않은 학습 단위의 인터뷰 문항과 문제 묶음.
+- 학습 지점의 수용 기준이 요구하는 범위를 넘는 "혹시 모르니" 식의 대체 설명, 추가 예시, 또는 확장된 트레이드오프 논의.
+- 커리큘럼의 여러 주차 분량을 한꺼번에 생성하는 학습 자료 대량 배치. 커리큘럼이 일정표이고, 학습 단위 폴더는 미리 만들어 둔 교과서가 아니다.
 
-If the learner wants more depth than the current checkpoint requires, that
-becomes its own next checkpoint in a future session, not an expansion of the
-current generation step.
+학습자가 현재 학습 지점이 요구하는 것보다 더 깊이 파고 싶다면, 그것은 미래 세션의 새로운 다음 학습 지점이 되는 것이지 현재 생성 단계의 확장이 아니다.
 
-## Phase 3 - Close-out path
+## Phase 3 — 마감 경로
 
-A session is only "closed" when it has turned its in-session work into
-durable artifacts and a refreshed progress view. Closing is not optional and
-is not a free-form summary - it follows a fixed sequence so that the next
-session can rely on the same inputs described above.
+세션은 세션 안에서 한 작업을 지속 가능한 산출물과 새로 갱신된 진행 상태 뷰로 바꿔 놨을 때 비로소 "마감" 된다. 마감은 선택이 아니며 자유 형식 요약도 아니다. 다음 세션이 위에서 설명한 동일한 입력값에 기댈 수 있도록 고정된 순서를 따른다.
 
-The close-out steps, in order:
+마감 단계는 다음 순서다.
 
-1. **Promote durable topic material.** Take the in-session draft generated
-   in Phase 2 and merge into `docs/topics/<topic-slug>/README.md` only the
-   parts that meet the promotion criteria: explanations that survived the
-   learner's questions, corrected misconceptions, reusable examples,
-   implementation insights, recurring mistakes, sharpened interview answers,
-   and notes the learner expects to need on next review. Raw AI transcript,
-   throwaway scratch work, and one-off rephrasings are not promoted.
-2. **Place runnable artifacts in their canonical folders.** Implementation
-   code goes under `implementations/<language>/<topic-slug>/`. Problem-set
-   solutions go under `solutions/<topic-slug>/`. Topic explanation,
-   implementation, and problem-solving artifacts stay separated so the
-   topic `README.md` does not become a code dump.
-3. **Record artifact links.** From the topic `README.md`, link to the
-   relevant implementation files and solution files added in this session,
-   so a future session can find them without searching.
-4. **Write a session summary.** Create a short entry under `docs/sessions/`
-   (one file per session) covering: which checkpoint was worked, what was
-   learned or implemented, what was blocked or left open, and what should
-   become the next checkpoint. Raw AI transcript is not saved here either.
-5. **Update `PROGRESS.md`.** Update the topic's status, language coverage,
-   problem-solving evidence, interview-practice evidence, and links to the
-   new artifacts and to the session summary written in step 4. Set the
-   `next checkpoint` field to the value the session summary identified, so
-   Phase 1 of the next session can pick it up directly.
-6. **Refresh the progress view.** Regenerate
-   [progress.html](progress.html) from `PROGRESS.md` so the visual view
-   reflects the new state. `PROGRESS.md` is the source of truth;
-   `progress.html` is a derived view and must never lead.
+1. **지속 가능한 학습 자료를 승격한다.** Phase 2 에서 만든 세션 내 초안에서 승격 기준을 충족한 부분만 `docs/topics/<topic-slug>/README.md` 로 병합한다. 학습자의 질문을 견뎌 낸 설명, 교정된 오개념, 재사용 가능한 예시, 구현 인사이트, 반복되는 실수, 다듬어진 인터뷰 답변, 다음 복습에서 필요할 것으로 보이는 노트가 그 대상이다. AI 원본 트랜스크립트, 일회용 스크래치 작업, 일회성 표현 바꾸기는 승격하지 않는다.
+2. **실행 가능한 산출물을 정해진 폴더에 배치한다.** 학습 코드 (Implementation artifact) 는 `implementations/<language>/<topic-slug>/` 아래로 들어간다. 풀이 코드 (Solution artifact) 묶음은 `solutions/<topic-slug>/` 아래로 들어간다. 학습 단위 설명, 구현, 문제 풀이 산출물은 분리해서 보관해, 학습 단위 `README.md` 가 코드 덤프가 되지 않게 한다.
+3. **산출물 링크를 기록한다.** 학습 단위 `README.md` 에서 이번 세션에 추가된 관련 구현 파일과 풀이 파일로 링크를 건다. 다음 세션이 따로 검색하지 않아도 찾을 수 있도록.
+4. **세션 요약을 쓴다.** `docs/sessions/` 아래에 짧은 항목 (세션당 파일 하나) 을 만든다. 어떤 학습 지점을 다뤘는지, 무엇을 배우거나 구현했는지, 무엇이 막혔거나 미해결로 남았는지, 다음 학습 지점은 무엇이 되어야 하는지를 담는다. 여기에도 AI 원본 트랜스크립트는 저장하지 않는다.
+5. **`PROGRESS.md` 를 갱신한다.** 학습 단위 상태, 언어 커버리지, 문제 풀이 증거, 인터뷰 연습 증거, 그리고 새 산출물과 4단계에서 작성한 세션 요약으로 가는 링크를 갱신한다. `next checkpoint` 필드는 세션 요약이 식별한 값으로 설정해, 다음 세션의 Phase 1 이 곧바로 집어 들 수 있게 한다.
+6. **진행 상태 뷰를 새로 만든다.** `PROGRESS.md` 로부터 [progress.html](progress.html) 을 다시 생성해 시각적 뷰가 새 상태를 반영하게 한다. `PROGRESS.md` 가 단일 진실 원천 (source of truth) 이고, `progress.html` 은 파생 뷰 (derived view) 이며 절대 앞서 가서는 안 된다.
 
-A session that does not reach step 6 is treated as incomplete. The next
-session begins by finishing the close-out for the previous session before
-starting Phase 1 against a fresh checkpoint.
+6단계까지 도달하지 못한 세션은 미완료로 취급한다. 다음 세션은 이전 세션의 마감을 마무리하는 것부터 시작하며, 그 뒤에야 새 학습 지점에 대해 Phase 1 을 연다.
 
-## Worked example
+## 동작 예시
 
-A short illustration of one pass through the flow, using Week 1 of the
-curriculum:
+커리큘럼 1주차를 사용해 플로우를 한 번 통과해 보는 짧은 예시다.
 
-- **Phase 1.** `PROGRESS.md` records that Array concept and Python
-  implementation are done, but the Java re-implementation is missing. The
-  next checkpoint becomes "Array - Java re-implementation, with one
-  trade-off note vs. the Python version."
-- **Phase 2.** The session opens `docs/topics/array/README.md`, sees that
-  the concept and Python sections already exist, and generates only a Java
-  re-implementation note plus the trade-off paragraph. It does not pre-fill
-  the C or TypeScript sections.
-- **Phase 3.** The Java implementation file is saved under
-  `implementations/java/array/`. The topic `README.md` is updated to link
-  to it. A short session summary is written under `docs/sessions/`.
-  `PROGRESS.md` flips Array's Java coverage to done, sets the next
-  checkpoint to the first Linked List checkpoint defined by Week 1, and
-  `progress.html` is regenerated.
+- **Phase 1.** `PROGRESS.md` 에 배열 개념과 Python 구현은 완료, Java 재구현은 빠져 있다고 기록되어 있다. 다음 학습 지점은 "배열 — Java 재구현, Python 버전과의 트레이드오프 노트 하나 포함" 이 된다.
+- **Phase 2.** 세션은 `docs/topics/array/README.md` 를 열어 개념과 Python 섹션이 이미 있는 걸 확인하고, Java 재구현 노트와 트레이드오프 문단만 생성한다. C 나 TypeScript 섹션은 미리 채우지 않는다.
+- **Phase 3.** Java 구현 파일은 `implementations/java/array/` 아래에 저장된다. 학습 단위 `README.md` 가 이 파일로 링크하도록 갱신된다. 짧은 세션 요약이 `docs/sessions/` 아래에 작성된다. `PROGRESS.md` 는 배열의 Java 커버리지를 완료로 바꾸고, 다음 학습 지점을 1주차가 정의한 연결 리스트의 첫 학습 지점으로 설정한다. 그리고 `progress.html` 이 재생성된다.
 
-The next session then starts at Phase 1 against the refreshed `PROGRESS.md`
-and does not need to re-derive any of this state.
+다음 세션은 새로 갱신된 `PROGRESS.md` 를 기준으로 Phase 1 에서 시작하며, 이 상태를 다시 유도해 낼 필요가 없다.
 
-## Related documents
+## 관련 문서
 
-- [CURRICULUM.md](CURRICULUM.md) - study order, weekly path, language
-  rotation, and the per-topic definition of done that Phase 1 uses.
-- [TOPIC_FORMAT.md](TOPIC_FORMAT.md) - the shape that any newly generated or
-  promoted topic material must follow.
-- [PROGRESS.md](PROGRESS.md) - source of truth for progress; the input to
-  Phase 1 and the output of Phase 3.
-- [progress.html](progress.html) - derived progress view, refreshed in the
-  last step of Phase 3.
+- [CURRICULUM.md](CURRICULUM.md) — 학습 순서, 주차별 경로, 언어 로테이션, 그리고 Phase 1 이 사용하는 학습 단위별 완료 정의.
+- [TOPIC_FORMAT.md](TOPIC_FORMAT.md) — 새로 생성되거나 승격되는 학습 자료가 따라야 할 형태.
+- [PROGRESS.md](PROGRESS.md) — 진행 상태의 단일 진실 원천. Phase 1 의 입력이자 Phase 3 의 출력.
+- [progress.html](progress.html) — 파생 진행 상태 뷰. Phase 3 의 마지막 단계에서 새로 갱신된다.

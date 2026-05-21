@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Learning Progress</title>
+    <title>학습 진행 상태</title>
     <!--
       Derived-view boundary (issues #9, #11).
 
@@ -125,44 +125,43 @@
   </head>
   <body>
     <main>
-      <h1>Learning Progress</h1>
+      <h1>학습 진행 상태</h1>
       <p class="source-note">
-        Derived view of <a href="./PROGRESS.md">PROGRESS.md</a>, which is the
-        source of truth. If this view and <code>PROGRESS.md</code> disagree,
-        <code>PROGRESS.md</code> wins. This page does not store learner
-        state; it parses <code>PROGRESS.md</code> at load time and renders
-        whatever fields it finds.
+        <a href="./PROGRESS.md">PROGRESS.md</a> 의 파생 뷰 (Derived view) 이며,
+        PROGRESS.md 가 단일 진실 원천 (Source of truth) 이다. 이 뷰와
+        <code>PROGRESS.md</code> 가 다르면 <code>PROGRESS.md</code> 가 이긴다.
+        이 페이지는 학습자 상태를 저장하지 않으며, 로드 시점에
+        <code>PROGRESS.md</code> 를 파싱해서 발견한 필드를 그대로 렌더링한다.
       </p>
 
       <section>
-        <h2>Overall progress</h2>
-        <div class="value" id="overall">Loading from PROGRESS.md...</div>
+        <h2>전체 진행 상태 (Overall progress)</h2>
+        <div class="value" id="overall">PROGRESS.md 에서 불러오는 중...</div>
       </section>
 
       <section>
-        <h2>Next learning step</h2>
-        <div class="value" id="next-step">Loading from PROGRESS.md...</div>
+        <h2>다음 학습 단계 (Next learning step)</h2>
+        <div class="value" id="next-step">PROGRESS.md 에서 불러오는 중...</div>
       </section>
 
       <section>
-        <h2>Per-topic state</h2>
+        <h2>학습 단위별 상태 (Per-topic state)</h2>
         <div id="topics">
-          <div class="value">Loading from PROGRESS.md...</div>
+          <div class="value">PROGRESS.md 에서 불러오는 중...</div>
         </div>
       </section>
 
       <p class="status" id="status"></p>
 
       <footer>
-        This page is derived from <a href="./PROGRESS.md">PROGRESS.md</a> at
-        load time. It does not store learner-progress state. To change what
-        appears here, update <code>PROGRESS.md</code> through the close-out
-        path in
-        <a href="./LEARNING_FLOW.md">LEARNING_FLOW.md</a> (Phase 3, step 5)
-        and reload this page. The per-topic state shown above mirrors the
-        seven minimum per-topic fields defined in PROGRESS.md's
-        "Minimum per-topic fields" section; the four language rows
-        (Python, Java, C, TypeScript) follow the curriculum rotation.
+        이 페이지는 로드 시점에 <a href="./PROGRESS.md">PROGRESS.md</a> 로부터
+        파생된다. 학습자 진행 상태를 저장하지 않는다. 여기 표시되는 내용을
+        바꾸려면 <a href="./LEARNING_FLOW.md">LEARNING_FLOW.md</a> (Phase 3,
+        step 5) 의 close-out 경로를 통해 <code>PROGRESS.md</code> 를 갱신한 뒤
+        이 페이지를 새로고침하라. 위에 보이는 학습 단위별 상태는 PROGRESS.md
+        의 "Minimum per-topic fields" 섹션에서 정의한 7개 최소 필드를 그대로
+        반영하며, 4개 언어 행 (Python, Java, C, TypeScript) 은 커리큘럼
+        로테이션을 따른다.
       </footer>
     </main>
 
@@ -210,7 +209,7 @@
       // edit accidentally inlines learner state into the static HTML,
       // this assertion fires before the fetch overwrites it.
       (function assertNoInlinedState() {
-        const placeholder = "Loading from PROGRESS.md...";
+        const placeholder = "PROGRESS.md 에서 불러오는 중...";
         const overallText = overallEl.textContent.trim();
         const nextText = nextStepEl.textContent.trim();
         const topicsText = topicsEl.textContent.trim();
@@ -230,20 +229,20 @@
 
       function showFallback(reason) {
         const msg =
-          "Could not load PROGRESS.md from this page (" + reason + "). " +
-          "Open PROGRESS.md directly, or serve this folder over a local " +
-          "HTTP server (for example: python -m http.server) and reload.";
+          "이 페이지에서 PROGRESS.md 를 불러올 수 없습니다 (" + reason + "). " +
+          "PROGRESS.md 를 직접 열거나, 이 폴더를 로컬 HTTP 서버로 띄운 뒤 " +
+          "(예: python -m http.server) 다시 불러오세요.";
         overallEl.textContent =
-          "See PROGRESS.md \"Current state\" section.";
+          "PROGRESS.md 의 \"Current state\" 섹션을 참조하세요.";
         nextStepEl.textContent =
-          "See PROGRESS.md \"Current state\" section and the " +
-          "\"next checkpoint\" field of the current topic.";
+          "PROGRESS.md 의 \"Current state\" 섹션과 현재 학습 단위의 " +
+          "\"next checkpoint\" 필드를 참조하세요.";
         topicsEl.innerHTML = "";
         const fallbackTopics = document.createElement("div");
         fallbackTopics.className = "value";
         fallbackTopics.textContent =
-          "See PROGRESS.md \"Current state\" section for the per-topic " +
-          "rows and their seven minimum fields.";
+          "학습 단위별 행과 7개 최소 필드는 PROGRESS.md 의 \"Current state\" " +
+          "섹션을 참조하세요.";
         topicsEl.appendChild(fallbackTopics);
         statusEl.textContent = msg;
         statusEl.classList.add("error");
@@ -501,9 +500,9 @@
           const empty = document.createElement("div");
           empty.className = "value empty";
           empty.textContent =
-            "No topics started yet. PROGRESS.md \"Current state\" " +
-            "carries the curriculum-implied first step; once the first " +
-            "close-out writes a per-topic row, it will appear here.";
+            "아직 시작한 학습 단위 (Topic) 가 없습니다. PROGRESS.md 의 " +
+            "\"Current state\" 가 커리큘럼이 제시하는 첫 단계를 담고 있으며, " +
+            "첫 close-out 이 학습 단위별 행을 쓰면 여기에 나타납니다.";
           topicsEl.appendChild(empty);
           return;
         }
@@ -518,14 +517,14 @@
           "interview / review evidence",
         ];
         const displayLabels = {
-          "current state": "Current state",
-          "next checkpoint": "Next checkpoint",
-          "topic material": "Topic material",
-          "latest session": "Latest session (recent-session context)",
+          "current state": "현재 상태 (Current state)",
+          "next checkpoint": "다음 학습 지점 (Next checkpoint)",
+          "topic material": "학습 자료 (Topic material)",
+          "latest session": "최신 세션 (Latest session — 최근 세션 컨텍스트)",
           "implementation evidence":
-            "Language implementation state",
-          "solution evidence": "Practice (solution) evidence",
-          "interview / review evidence": "Interview / review evidence",
+            "언어별 학습 코드 증거 (Language implementation state)",
+          "solution evidence": "풀이 코드 증거 (Practice / solution evidence)",
+          "interview / review evidence": "면접 / 복습 증거 (Interview / review evidence)",
         };
         for (const topic of topics) {
           const card = document.createElement("div");
@@ -577,18 +576,17 @@
           overallEl.textContent = currentState;
         } else {
           overallEl.textContent =
-            "PROGRESS.md has no \"Current state\" section yet.";
+            "PROGRESS.md 에 아직 \"Current state\" 섹션이 없습니다.";
         }
         const nextStep = extractNextStep(currentState);
         nextStepEl.textContent = nextStep ||
-          "PROGRESS.md does not record a next checkpoint yet.";
+          "PROGRESS.md 에 아직 next checkpoint 가 기록되어 있지 않습니다.";
         const topics = extractTopicBlocks(currentState);
         renderTopics(topics);
         statusEl.textContent =
-          "Rendered from PROGRESS.md at " + new Date().toISOString() +
-          ". This view fetches PROGRESS.md only; session summaries, " +
-          "implementation files, and solution files are linked but " +
-          "not fetched.";
+          "PROGRESS.md 기반 렌더링 시각: " + new Date().toISOString() +
+          ". 이 뷰는 PROGRESS.md 만 가져옵니다. 세션 요약, 학습 코드 파일, " +
+          "풀이 파일은 링크만 제공하며 직접 가져오지 않습니다.";
       }
 
       load();

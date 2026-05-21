@@ -1,128 +1,122 @@
-# Curriculum
+# 커리큘럼
 
-This is the stable study path for the one-month CS interview-prep learning
-system. Future sessions follow the order, priorities, and weekly plan defined
-here.
+한 달짜리 CS 면접 대비 학습 시스템의 안정적인 학습 경로를 담은 문서다.
+앞으로의 세션은 여기서 정의한 순서, 우선순위, 주간 계획을 따른다.
 
-## Operating model at a glance
+## 운영 모델 한눈에 보기
 
-| Item | Value |
+| 항목 | 값 |
 |------|-------|
-| Goal | Build interview-ready CS fundamentals, weighted toward roles that focus on knowledge over live coding tests. |
-| Duration | One month of focused study (about 5 days per week, 3-4 hours per day, totaling 60-80 hours). |
-| Pace | Concept-first, fast reading with AI assistance; depth comes from implementation and problem solving. |
-| Primary language | **Python** for learning, exploration, and first-pass implementations. |
-| Secondary implementation languages | **Java**, **C**, and **TypeScript** for re-implementing studied topics to internalize trade-offs across paradigms. |
-| Time allocation | Data structures + algorithms (~70%), operating systems (~15%), interview practice and review (~15%). |
-| Theory vs. practice split | Roughly 50% concept study, 50% problem solving and mock interviews. |
+| 목표 | 라이브 코딩 테스트보다는 지식 검증에 무게를 두는 직무에 맞춰, 면접에서 바로 꺼내 쓸 수 있는 CS 기초 다지기. |
+| 기간 | 한 달간 집중 학습 (주 5일, 하루 3-4시간, 총 60-80시간 수준). |
+| 페이스 | 개념 먼저, AI 도움을 받아 빠르게 읽고 넘기기. 깊이는 구현과 문제 풀이에서 확보. |
+| 주력 언어 | 학습·탐색·1차 구현용 **Python**. |
+| 보조 구현 언어 | 학습한 학습 단위 (Topic) 를 패러다임별로 다시 구현하며 트레이드오프를 체화하기 위한 **Java**, **C**, **TypeScript**. |
+| 시간 배분 | 자료구조 + 알고리즘 (~70%), 운영체제 (~15%), 면접 연습 및 복습 (~15%). |
+| 이론 vs 실전 비중 | 개념 학습 50%, 문제 풀이 및 모의 면접 50% 정도. |
 
-## Study order and priorities
+## 학습 순서와 우선순위
 
-The curriculum follows a single ranked priority list. Every week stays inside
-this ordering, even when individual topics shift.
+커리큘럼은 하나의 우선순위 리스트를 따른다. 개별 학습 단위가 바뀌더라도
+주간 계획은 항상 이 순서 안에서 움직인다.
 
-1. **Data structures + algorithms (~70%)**
-   - Core data structures (must-learn): Array, Linked List, Stack, Queue,
-     Binary Tree.
-   - Extended data structures (as time allows): Graph, Hash Table, Heap, Trie.
-   - Algorithms are studied alongside the data structure that motivates them,
-     not as a separate track.
-2. **Operating systems (~15%)**
-   - Pulled in opportunistically when a data structure or algorithm makes an
-     OS concept concrete (e.g., stack overflow with recursion, cache locality
-     with arrays).
-   - Core surface area: processes, memory, threads, caching.
-3. **Interview practice and review (~15%)**
-   - Problem solving on LeetCode-style sets tied to the week's topic.
-   - Mock interviews, with frequency increasing toward week 4.
+1. **자료구조 + 알고리즘 (~70%)**
+   - 핵심 자료구조 (반드시 학습): 배열 (Array), 연결 리스트 (Linked List),
+     스택 (Stack), 큐 (Queue), 이진 트리 (Binary Tree).
+   - 확장 자료구조 (시간이 허락하는 만큼): 그래프 (Graph), 해시 테이블
+     (Hash Table), 힙 (Heap), 트라이 (Trie).
+   - 알고리즘은 별도 트랙이 아니라, 그것을 필요로 하는 자료구조와 함께
+     학습한다.
+2. **운영체제 (~15%)**
+   - 자료구조나 알고리즘이 OS 개념을 구체적으로 만들어 줄 때 (예: 재귀와
+     스택 오버플로, 배열과 캐시 지역성) 기회를 봐서 끌어들인다.
+   - 다루는 핵심 영역: 프로세스, 메모리, 스레드, 캐시.
+3. **면접 연습 및 복습 (~15%)**
+   - 그 주에 학습한 학습 단위와 연결된 LeetCode 류 문제 풀이.
+   - 모의 면접은 4주 차로 갈수록 빈도를 늘린다.
 
-## Language rotation per topic
+## 학습 단위별 언어 로테이션
 
-Each topic is studied in the same fixed order so that the learner builds the
-same mental model across paradigms:
+각 학습 단위는 동일한 고정 순서로 학습해, 학습자가 패러다임이 달라져도
+같은 멘탈 모델을 쌓도록 한다.
 
-1. **Concept** - read and explain the data structure or algorithm in plain
-   language, with Big O and trade-offs.
-2. **Python** (primary) - implement first in Python to get a working version
-   quickly and to anchor the mental model.
-3. **Java** - re-implement to practice static typing, classes, and the JVM
-   memory model framing.
-4. **C** - re-implement to confront manual memory management and pointer
-   semantics.
-5. **TypeScript** - re-implement to practice structural typing and to cover
-   the language used for web-facing interview questions.
+1. **개념** - 해당 자료구조나 알고리즘을 평이한 언어로 설명하고, Big O 와
+   트레이드오프까지 짚는다.
+2. **Python** (주력) - 가장 먼저 Python 으로 구현해, 동작하는 버전을 빠르게
+   확보하면서 멘탈 모델을 고정시킨다.
+3. **Java** - 정적 타입, 클래스, JVM 메모리 모델 관점을 연습하기 위해 다시
+   구현한다.
+4. **C** - 수동 메모리 관리와 포인터 시맨틱을 정면으로 마주하기 위해 다시
+   구현한다.
+5. **TypeScript** - 구조적 타이핑을 연습하고, 웹 직무 면접에서 자주 쓰이는
+   언어를 커버하기 위해 다시 구현한다.
 
-Python is always the primary practice language. Java, C, and TypeScript are
-implementation languages applied to topics already studied in Python. A topic
-is not considered "done" until at least the Python implementation and one
-secondary-language re-implementation exist.
+Python 은 언제나 주력 연습 언어다. Java, C, TypeScript 는 Python 으로 이미
+학습한 학습 단위에 적용하는 구현 언어다. 어떤 학습 단위든 Python 구현과
+보조 언어 재구현이 최소 하나씩 갖춰지기 전까지는 "끝났다" 고 보지 않는다.
 
-## One-month path
+## 한 달 경로
 
-The four weeks are sequenced so that each week's data structures feed the
-next week's algorithms. Hours are guidance, not a contract.
+매 주의 자료구조가 다음 주의 알고리즘을 떠받치도록 4주를 순서대로 배치했다.
+시간은 가이드일 뿐, 계약은 아니다.
 
-### Week 1 - Foundations and linear structures
+### 1주차 - 기초와 선형 구조
 
-- Day 1-2: Big O notation and the memory model (about 6 hours of prep work
-  before any structure-specific study).
-- Day 3-5: Array and core array problems (about 12 hours).
-- Day 6-7: Linked List and related problems (about 12 hours).
-- Day 8-10: Stack and Queue (about 12 hours).
-- Algorithms in parallel: linear search, binary search.
-- Checkpoint: Array, Linked List, and Stack implemented in Python plus at
-  least one of Java / C / TypeScript.
+- Day 1-2: Big O 표기법과 메모리 모델 (자료구조별 학습에 들어가기 전 사전
+  준비, 약 6시간).
+- Day 3-5: 배열과 핵심 배열 문제 (약 12시간).
+- Day 6-7: 연결 리스트와 관련 문제 (약 12시간).
+- Day 8-10: 스택과 큐 (약 12시간).
+- 병행 알고리즘: 선형 탐색, 이진 탐색.
+- 학습 지점 (Checkpoint): 배열, 연결 리스트, 스택을 Python 으로 구현하고,
+  Java / C / TypeScript 중 최소 하나로 재구현.
 
-### Week 2 - Trees and traversal
+### 2주차 - 트리와 순회
 
-- Day 1-5: Binary Tree and recursion (about 15 hours).
-- Day 6-7: DFS and BFS foundations and implementation (about 12 hours).
-- Algorithms in parallel: DFS, BFS.
-- Linked OS concepts: stack overflow, the recursion call stack.
-- Checkpoint: at least five tree traversal problems solved; at least one
-  mock interview.
+- Day 1-5: 이진 트리와 재귀 (약 15시간).
+- Day 6-7: DFS, BFS 기초와 구현 (약 12시간).
+- 병행 알고리즘: DFS, BFS.
+- 연결되는 OS 개념: 스택 오버플로, 재귀 호출 스택.
+- 학습 지점: 트리 순회 문제 최소 5개 풀이, 모의 면접 최소 1회.
 
-### Week 3 - Graphs, advanced search, hashing
+### 3주차 - 그래프, 고급 탐색, 해싱
 
-- Day 1-4: Graph theory and implementation (about 12 hours).
-- Day 5-7: DFS and BFS on graphs and related problems (about 12 hours).
-- Day 8-10: Hash Table (about 12 hours).
-- Algorithms in parallel: topological sort, introductory shortest path
-  (Dijkstra).
-- Checkpoint: at least five graph problems solved; Sliding Window and Two
-  Pointers patterns understood.
+- Day 1-4: 그래프 이론과 구현 (약 12시간).
+- Day 5-7: 그래프 위에서의 DFS, BFS 와 관련 문제 (약 12시간).
+- Day 8-10: 해시 테이블 (약 12시간).
+- 병행 알고리즘: 위상 정렬, 입문 수준 최단 경로 (Dijkstra).
+- 학습 지점: 그래프 문제 최소 5개 풀이, Sliding Window 와 Two Pointers
+  패턴 이해.
 
-### Week 4 - Sorting, DP / Greedy, and consolidation
+### 4주차 - 정렬, DP / Greedy, 마무리
 
-- Day 1-3: Sorting algorithms - Bubble, Selection, Insertion, Merge, Quick
-  (about 9 hours).
-- Day 4-5: Dynamic Programming and Greedy fundamentals (about 9 hours).
-- Day 6-7: Heap and Trie as optional depth topics (about 6 hours).
-- Day 8-10: Mock interviews and full-curriculum review (about 12 hours).
-- Algorithms in parallel: Sliding Window, Two Pointers.
-- Checkpoint: five sorting algorithms implemented with time-complexity
-  comparison; at least three mock interviews completed.
+- Day 1-3: 정렬 알고리즘 - Bubble, Selection, Insertion, Merge, Quick (약
+  9시간).
+- Day 4-5: 동적 계획법 (Dynamic Programming) 과 Greedy 기초 (약 9시간).
+- Day 6-7: 선택적 심화 주제로서의 힙과 트라이 (약 6시간).
+- Day 8-10: 모의 면접과 커리큘럼 전체 복습 (약 12시간).
+- 병행 알고리즘: Sliding Window, Two Pointers.
+- 학습 지점: 시간 복잡도 비교까지 포함해 5개 정렬 알고리즘 구현, 모의 면접
+  최소 3회 완료.
 
-## Definition of done per topic
+## 학습 단위별 완료 정의 (definition-of-done)
 
-A topic is durably learned when all of the following hold:
+다음 조건이 모두 충족되면 그 학습 단위는 확실히 익혔다고 본다.
 
-- Concept can be explained from memory, including Big O for the common
-  operations and at least one real-world use case.
-- A working Python implementation exists.
-- At least one re-implementation exists in Java, C, or TypeScript (with a
-  goal of covering all three across the month).
-- At least three interview-style questions have been answered for the topic.
-- At least two related problems have been solved end-to-end.
+- 개념을 기억에 의존해 설명할 수 있고, 일반 연산의 Big O 와 실제 사용 사례
+  하나 이상까지 함께 이야기할 수 있다.
+- 동작하는 Python 구현이 존재한다.
+- Java, C, TypeScript 중 하나 이상에서 재구현이 존재한다 (한 달에 걸쳐
+  세 언어를 모두 커버하는 것을 목표로 한다).
+- 해당 학습 단위에 대해 면접 스타일 질문에 최소 3개 답해 보았다.
+- 관련 문제를 최소 2개 끝까지 풀어 보았다.
 
-## How this document is used
+## 이 문서의 사용 방식
 
-- Future sessions treat this document as the source of truth for what to
-  study next. When the current week or topic is unclear, the session
-  consults this curriculum first.
-- Progress against the weekly checkpoints is tracked in
-  [PROGRESS.md](PROGRESS.md).
-- The per-topic learning workflow (concept -> Python -> secondary language
-  -> questions -> problems) is described in more detail in
-  [LEARNING_FLOW.md](LEARNING_FLOW.md), and the expected shape of each
-  topic's notes lives in [TOPIC_FORMAT.md](TOPIC_FORMAT.md).
+- 앞으로의 세션은 다음에 무엇을 학습할지에 대해 이 문서를 단일 진실 원천
+  (source of truth) 으로 삼는다. 지금이 어느 주차인지, 어느 학습 단위인지
+  애매하면 세션은 먼저 이 커리큘럼을 확인한다.
+- 주간 학습 지점 대비 진행 상황은 [PROGRESS.md](PROGRESS.md) 에서 추적한다.
+- 학습 단위별 학습 흐름 (개념 -> Python -> 보조 언어 -> 질문 -> 문제) 은
+  [LEARNING_FLOW.md](LEARNING_FLOW.md) 에서 더 자세히 다루며, 학습 단위별
+  노트의 기대 형식은 [TOPIC_FORMAT.md](TOPIC_FORMAT.md) 에 정리되어 있다.

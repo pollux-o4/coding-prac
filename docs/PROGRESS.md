@@ -1,110 +1,106 @@
-# Progress
+# 진행 상태 (Progress)
 
-This file is the source of truth for learner progress. Every later learning
-session, every AI tutor pass, and every visualization derives current study
-state from this document. Topic folders, session summaries, implementation
-code, and solution files are the durable artifacts; this document is the
-compact index over them.
+이 문서는 학습자 진행 상태의 단일 진실 원천 (source of truth) 이다. 이후의 모든
+학습 세션 (Session), 모든 AI 튜터 패스, 모든 시각화는 현재 학습 상태를 이
+문서에서 끌어낸다. 학습 단위 (Topic) 폴더, 세션 요약, 학습 코드
+(Implementation artifact), 풀이 파일은 지속적인 산출물이고, 이 문서는 그
+산출물들에 대한 압축 인덱스다.
 
-The local derived view entrypoint is [progress.html](progress.html).
-`progress.html` is regenerated from this file and must never lead.
+로컬에서 파생되는 뷰의 진입점은 [progress.html](progress.html) 이다.
+`progress.html` 은 이 문서로부터 다시 생성되며, 절대로 이 문서를 앞서서는
+안 된다.
 
-## Contract
+## 계약 (Contract)
 
-The progress contract has three parts.
+진행 상태 계약은 세 부분으로 구성된다.
 
-1. **This document is the current-state source of truth.** When a later
-   session or visualization needs to know "where is the learner right now,
-   on which topic, in which language, with what next step", it reads this
-   document and nothing else. If this document disagrees with any other
-   artifact (a topic `README.md`, a session summary, a derived view), this
-   document wins and the other artifact is corrected to match.
-2. **This document is compact.** It records the minimum per-topic fields
-   defined below and links out to detailed artifacts. It does not copy
-   topic explanations, full session transcripts, or implementation code.
-   Anything large lives in its own durable location and is referenced from
-   here by link.
-3. **This document is updated only through the
-   [LEARNING_FLOW.md](LEARNING_FLOW.md) close-out path.** Step 5 of Phase 3
-   ("Update `PROGRESS.md`") is the single supported write path. Ad-hoc
-   edits outside the close-out flow are not part of the contract.
+1. **이 문서는 현재 상태에 대한 단일 진실 원천이다.** 이후 세션이나
+   시각화가 "지금 학습자가 어디에 있는지, 어느 학습 단위에서, 어느 언어로,
+   다음 단계는 무엇인지" 알아야 할 때, 이 문서만 읽고 다른 것은 읽지
+   않는다. 이 문서가 다른 산출물 (학습 단위의 `README.md`, 세션 요약,
+   파생된 진행 상태 뷰 (Progress view)) 과 어긋나면, 이 문서가 이기고 다른
+   산출물을 이 문서에 맞게 고친다.
+2. **이 문서는 압축적이다.** 아래에 정의된 학습 단위별 최소 필드만
+   기록하고, 자세한 산출물로는 링크로 빠진다. 학습 단위 설명, 전체 세션
+   기록, 학습 코드를 복사하지 않는다. 분량이 큰 것은 모두 각자의 지속적
+   위치에 두고, 이 문서에서는 링크로만 참조한다.
+3. **이 문서는 오직 [LEARNING_FLOW.md](LEARNING_FLOW.md) 의 마감
+   (Close-out) 경로를 통해서만 갱신된다.** Phase 3 의 5단계
+   ("`PROGRESS.md` 갱신") 가 지원되는 유일한 쓰기 경로다. 마감 흐름 바깥의
+   즉흥 편집은 계약의 일부가 아니다.
 
-## Minimum per-topic fields
+## 학습 단위별 최소 필드
 
-Every topic that has been started carries the following seven fields. Topics
-that have not been started yet do not appear; the
-[CURRICULUM.md](CURRICULUM.md) ordering implies them. A topic is considered
-"started" the first time the close-out path writes any of these fields for
-it.
+시작된 모든 학습 단위는 다음 일곱 개의 필드를 가진다. 아직 시작되지 않은
+학습 단위는 등장하지 않으며, 그 순서는 [CURRICULUM.md](CURRICULUM.md) 의
+커리큘럼이 암묵적으로 정한다. 학습 단위는 마감 경로가 이 필드들 중 하나라도
+처음으로 기록하는 순간 "시작된" 것으로 본다.
 
-| Field | What it records | Why later sessions need it |
-|-------|-----------------|----------------------------|
-| Current state | Where this topic stands against its per-topic definition of done in [CURRICULUM.md](CURRICULUM.md): concept understood yes/no, which languages are covered, problem and interview counts so far. | Lets Phase 1 of the next session decide whether the topic is finished or still needs another pass without re-reading the topic folder. |
-| Next checkpoint | A single, written-down next checkpoint for this topic: the artifact the next session intends to produce and the acceptance criterion that will mark it done. Mirrors the Phase 1 output described in [LEARNING_FLOW.md](LEARNING_FLOW.md). | Lets the next session honor the "next checkpoint" rule in Phase 1 without re-deriving it. |
-| Topic material | Link to `docs/topics/<topic-slug>/README.md` (and the folder beneath it). The promoted concept notes, language-comparison notes, and interview answers live there. | Lets the next session locate existing durable material instead of regenerating it. |
-| Latest session | Link to the most recent session summary under `docs/sessions/` that worked on this topic, plus its date. Older sessions remain in the folder; only the latest pointer lives here. | Lets the next session pick up the previous session's context without scanning all session summaries. |
-| Implementation evidence | Links to the implementation files added so far for this topic, grouped by language (Python primary, then Java / C / TypeScript). One link per language is enough; the file itself is the evidence. | Lets the next session see language coverage against the rotation in [CURRICULUM.md](CURRICULUM.md). |
-| Solution evidence | Links to the problem-set solutions written so far for this topic under `solutions/<topic-slug>/`, with a running count. | Lets the next session check the problem-solving counts that the per-topic definition of done and weekly checkpoints require. |
-| Interview / review evidence | Links to the interview-style answers and any mock-interview notes recorded so far for this topic, with a running count. Lives inside the topic `README.md` or under `docs/sessions/`; this field is the pointer. | Lets the next session check the interview-question counts that the per-topic definition of done requires. |
+| 필드 | 무엇을 기록하는가 | 이후 세션이 왜 이 필드를 필요로 하는가 |
+|------|-------------------|----------------------------------------|
+| 현재 상태 | 이 학습 단위가 [CURRICULUM.md](CURRICULUM.md) 에 정의된 자기 학습 단위별 완료 기준에 비추어 어디까지 와 있는지: 개념 이해 여부 (예/아니오), 어떤 언어들을 다뤘는지, 지금까지 푼 문제 수와 면접 질문 수. | 다음 세션의 Phase 1 이 학습 단위 폴더를 다시 읽지 않고도 이 학습 단위가 끝났는지 아니면 추가 패스가 필요한지 판단할 수 있게 한다. |
+| 다음 학습 지점 (Checkpoint) | 이 학습 단위에 대해 글로 적어 둔 하나의 다음 학습 지점: 다음 세션이 만들어내려는 산출물과, 그것이 완료됐다고 판정될 합격 기준. [LEARNING_FLOW.md](LEARNING_FLOW.md) 에 기술된 Phase 1 출력과 동일하다. | 다음 세션이 Phase 1 의 "다음 학습 지점" 규칙을 다시 유도하지 않고도 그대로 따를 수 있게 한다. |
+| 학습 자료 (Topic material) | `docs/topics/<topic-slug>/README.md` (와 그 아래 폴더) 로의 링크. 승격된 개념 노트, 언어 비교 노트, 면접 답안이 여기에 있다. | 다음 세션이 기존 지속 자료를 다시 만들어내지 않고 찾아갈 수 있게 한다. |
+| 최근 세션 | 이 학습 단위를 다룬 `docs/sessions/` 아래의 가장 최근 세션 요약 링크와 그 날짜. 이전 세션들은 폴더에 그대로 남고, 여기에는 최신 포인터만 둔다. | 다음 세션이 모든 세션 요약을 훑지 않고도 직전 세션의 맥락을 이어받을 수 있게 한다. |
+| 학습 코드 증거 | 이 학습 단위에 대해 지금까지 추가된 학습 코드 파일들로의 링크, 언어별로 묶음 (Python 우선, 그 다음 Java / C / TypeScript). 언어당 링크 한 개면 충분하다. 파일 자체가 증거다. | 다음 세션이 [CURRICULUM.md](CURRICULUM.md) 의 로테이션 대비 언어 커버리지를 확인할 수 있게 한다. |
+| 풀이 증거 | 이 학습 단위에 대해 지금까지 작성된 문제 풀이들로의 링크, `solutions/<topic-slug>/` 아래에 있으며 누적 개수와 함께 기록. | 다음 세션이 학습 단위별 완료 기준과 주간 학습 지점이 요구하는 문제 풀이 수를 점검할 수 있게 한다. |
+| 면접 / 복습 증거 | 이 학습 단위에 대해 지금까지 기록된 면접식 답안과 모의 면접 노트로의 링크, 누적 개수와 함께 기록. 실제 내용은 학습 단위의 `README.md` 또는 `docs/sessions/` 안에 있으며, 이 필드는 그것으로의 포인터다. | 다음 세션이 학습 단위별 완료 기준이 요구하는 면접 질문 수를 점검할 수 있게 한다. |
 
-A row whose value is "none yet" is acceptable as long as the field is
-present. Missing fields are not acceptable; they break the contract.
+값이 "아직 없음" 인 행은 필드만 있으면 받아들여진다. 필드 자체가 빠진
+경우는 받아들여지지 않으며, 계약 위반이다.
 
-In addition to the per-topic rows, this document carries two top-level
-fields that the next session reads first:
+학습 단위별 행 외에, 이 문서는 다음 세션이 가장 먼저 읽는 두 개의 최상위
+필드를 함께 둔다.
 
-- **Current week.** Which week of [CURRICULUM.md](CURRICULUM.md) the
-  learner is in. Phase 1 uses this to locate the current position.
-- **Current topic.** Which topic is active. Phase 1 honors this together
-  with the topic's "next checkpoint" field before consulting the
-  curriculum.
+- **현재 주차.** 학습자가 [CURRICULUM.md](CURRICULUM.md) 의 어느 주차에
+  있는지. Phase 1 은 이 값을 사용해 현재 위치를 찾는다.
+- **현재 학습 단위.** 어떤 학습 단위가 진행 중인지. Phase 1 은 커리큘럼을
+  보기 전에 이 값과 해당 학습 단위의 "다음 학습 지점" 필드를 함께
+  사용한다.
 
-## Evidence-link boundary
+## 증거 링크 경계 (Boundary)
 
-The progress document points at evidence; it does not contain it. The
-boundary is:
+진행 상태 문서는 증거를 가리킬 뿐, 증거를 담지 않는다. 경계는 다음과
+같다.
 
-- **In this document.** Status flags, counts, the next-checkpoint
-  description, the current week and topic, and one link per piece of
-  evidence. Roughly one short table row per started topic.
-- **Not in this document.** Topic explanations, full implementation code,
-  problem solutions, raw AI transcripts, full session narratives. Each of
-  these stays in its own durable location:
-  - Topic material - `docs/topics/<topic-slug>/README.md` and the rest of
-    that folder.
-  - Implementation code - `implementations/<language>/<topic-slug>/`.
-  - Problem solutions - `solutions/<topic-slug>/`.
-  - Session summaries - `docs/sessions/`.
-  - Curriculum and definition of done - [CURRICULUM.md](CURRICULUM.md).
-  - Per-session flow - [LEARNING_FLOW.md](LEARNING_FLOW.md).
-  - Topic note shape - [TOPIC_FORMAT.md](TOPIC_FORMAT.md).
+- **이 문서에 들어가는 것.** 상태 플래그, 누적 개수, 다음 학습 지점
+  설명, 현재 주차와 학습 단위, 증거 한 건당 링크 하나. 시작된 학습 단위
+  하나당 대략 짧은 표 한 줄.
+- **이 문서에 들어가지 않는 것.** 학습 단위 설명, 전체 학습 코드, 문제
+  풀이, 가공되지 않은 AI 전사, 전체 세션 서술. 이것들은 각자의 지속
+  위치에 머문다.
+  - 학습 자료 - `docs/topics/<topic-slug>/README.md` 와 같은 폴더의 나머지
+    파일.
+  - 학습 코드 - `implementations/<language>/<topic-slug>/`.
+  - 문제 풀이 - `solutions/<topic-slug>/`.
+  - 세션 요약 - `docs/sessions/`.
+  - 커리큘럼과 완료 기준 - [CURRICULUM.md](CURRICULUM.md).
+  - 세션별 흐름 - [LEARNING_FLOW.md](LEARNING_FLOW.md).
+  - 학습 단위 노트 형식 - [TOPIC_FORMAT.md](TOPIC_FORMAT.md).
 
-The reason for this boundary is that the progress document is read at the
-start of every session and rendered into [progress.html](progress.html).
-If it copies content from its evidence sources, it drifts from them and
-stops being a reliable source of truth. Links are stable; copies are not.
+이런 경계를 두는 이유는, 진행 상태 문서가 모든 세션 시작 시점에 읽히고
+[progress.html](progress.html) 로 렌더링되기 때문이다. 증거 출처의 내용을
+복사해 두면 출처와 어긋나면서 더 이상 신뢰할 수 있는 단일 진실 원천이
+되지 못한다. 링크는 안정적이지만, 복사본은 그렇지 않다.
 
-## How this document is updated
+## 이 문서가 갱신되는 방식
 
-This document is written by the close-out path in
-[LEARNING_FLOW.md](LEARNING_FLOW.md), Phase 3, step 5. Each close-out:
+이 문서는 [LEARNING_FLOW.md](LEARNING_FLOW.md) 의 마감 경로, Phase 3 의 5
+단계가 쓴다. 매번 마감 시:
 
-1. Updates the affected topic's row, touching only the fields that
-   changed.
-2. Sets that topic's "next checkpoint" field to the value the session
-   summary identified.
-3. Updates the top-level current week and current topic if the session
-   crossed a boundary.
-4. Triggers regeneration of [progress.html](progress.html) as the next
-   step of the close-out.
+1. 영향을 받은 학습 단위의 행만 갱신하며, 바뀐 필드만 건드린다.
+2. 그 학습 단위의 "다음 학습 지점" 필드를 세션 요약이 정한 값으로
+   설정한다.
+3. 세션이 경계를 넘었다면 최상위의 현재 주차와 현재 학습 단위를 갱신한다.
+4. 마감의 다음 단계로 [progress.html](progress.html) 재생성을 트리거한다.
 
-Sessions do not edit this document outside the close-out path, and they do
-not move content from this document into a topic `README.md` or a session
-summary - the direction of the link is always from this document outward.
+세션은 마감 경로 바깥에서 이 문서를 편집하지 않으며, 이 문서의 내용을
+학습 단위의 `README.md` 나 세션 요약으로 옮기지도 않는다. 링크의 방향은
+항상 이 문서에서 바깥으로 향한다.
 
-## Current state
+## 현재 상태
 
-No topic has been started yet. The curriculum in
-[CURRICULUM.md](CURRICULUM.md) defines the next topic to begin (Week 1,
-Big O notation and the memory model). The first close-out will create the
-first per-topic row under this section using the fields above.
+아직 시작된 학습 단위가 없다. [CURRICULUM.md](CURRICULUM.md) 의
+커리큘럼이 다음에 시작할 학습 단위를 정의한다 (Week 1, Big O 표기법과
+메모리 모델). 첫 마감이 위에 정의된 필드들을 사용해 이 섹션 아래에 첫
+학습 단위별 행을 생성할 것이다.

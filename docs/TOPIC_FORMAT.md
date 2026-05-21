@@ -1,181 +1,71 @@
-# Topic Format
+# 학습 단위 포맷 (Topic Format)
 
-This is the stable entrypoint that defines the durable topic material format
-for the one-month, AI-guided learning system. Every topic folder under
-`docs/topics/<topic-slug>/` follows this format so that repeated sessions
-sharpen the same artifact instead of producing parallel notes.
+이 문서는 한 달짜리 AI 가이드 학습 시스템에서 사용하는, 오래 살아남는 학습 자료 (Topic material) 포맷을 정의하는 안정 진입점이다. `docs/topics/<topic-slug>/` 아래의 모든 학습 단위 (Topic) 폴더는 이 포맷을 따른다. 그래야 반복되는 세션 (Session) 이 같은 산출물을 계속 다듬게 되고, 별개의 노트를 평행하게 만들어내지 않는다.
 
-The format is intentionally small. It exists to keep topic material readable
-at the curriculum's high pace, while making explicit which content is stable
-enough to survive across sessions and which is still a draft.
+이 포맷은 일부러 작게 유지한다. 빠른 페이스의 커리큘럼에서도 학습 자료가 읽을 만한 상태로 남아 있게 하고, 어떤 내용이 세션 사이를 넘어 살아남을 만큼 안정됐는지, 어떤 내용이 아직 초안인지를 분명히 드러내기 위해 존재한다.
 
-## Durable topic document contract
+## 오래 가는 학습 단위 문서의 계약
 
-Every topic has exactly one durable document at
-`docs/topics/<topic-slug>/README.md`. That file is the minimum contract.
+모든 학습 단위는 `docs/topics/<topic-slug>/README.md` 에 정확히 하나의 오래 가는 문서를 둔다. 이 파일이 최소 계약이다.
 
-The contract requires, in order:
+계약은 다음 항목을 순서대로 요구한다.
 
-1. **Title and one-line scope.** The topic name and a single sentence
-   describing what the document covers and, when relevant, what it does not
-   (for example, "covers arrays as a contiguous-memory data structure; sorting
-   algorithms over arrays live in their own topic").
-2. **Curriculum anchor.** A short reference to where this topic sits in
-   [CURRICULUM.md](CURRICULUM.md): the week and the priority tier (core data
-   structure, extended data structure, algorithm, OS concept, or interview
-   practice). This makes the document navigable from the curriculum without
-   re-deriving the position each time.
-3. **Required teaching structure** (see the next section). This is the body
-   of the document and is non-negotiable.
-4. **Language coverage table.** A small table listing Python (primary) plus
-   Java, C, and TypeScript, with a status per language (`done`, `draft`, or
-   `not started`) and a link to the implementation file under
-   `implementations/<language>/<topic-slug>/` when it exists. The table is
-   the topic's view of the per-topic definition of done from `CURRICULUM.md`.
-5. **Linked artifacts.** Links to the runnable implementations and to any
-   problem-set solutions under `solutions/<topic-slug>/` that belong to this
-   topic. Code itself is not inlined into the topic document; the topic
-   document points to it.
-6. **Practice and interview notes section.** A single section that holds
-   sharpened interview answers and recurring problem-solving insights for
-   this topic. Splitting rules for this section are stated below.
-7. **Last-promoted marker.** A short trailer recording when the document was
-   last promoted in a close-out and which session summary under
-   `docs/sessions/` produced that promotion. The marker exists so the next
-   session can tell at a glance whether the document is freshly stable or
-   stale.
+1. **제목과 한 줄 범위.** 학습 단위 이름과, 이 문서가 무엇을 다루는지 그리고 필요하다면 무엇은 다루지 *않는지* 를 한 문장으로 설명한다 (예: "배열을 연속 메모리 자료구조로 다룬다. 배열 위의 정렬 알고리즘은 별도 학습 단위에 둔다").
+2. **커리큘럼 앵커.** 이 학습 단위가 [CURRICULUM.md](CURRICULUM.md) 안에서 어디에 위치하는지에 대한 짧은 참조: 몇 주차이고, 우선순위 등급이 무엇인지 (핵심 자료구조 / 확장 자료구조 / 알고리즘 / 운영체제 개념 / 인터뷰 연습). 이렇게 해 두면 매번 위치를 다시 추론할 필요 없이 커리큘럼에서 문서로 바로 넘어올 수 있다.
+3. **필수 교육 구조** (다음 절 참조). 문서의 본문이며 협상 불가다.
+4. **언어 커버리지 (language coverage) 표.** Python (주력) 에 Java, C, TypeScript 를 더한 작은 표를 둔다. 각 언어별 상태 (`done`, `draft`, `not started`) 와, 존재한다면 `implementations/<language>/<topic-slug>/` 아래 학습 코드 (Implementation artifact) 파일로의 링크를 함께 적는다. 이 표는 `CURRICULUM.md` 에 정의된 "학습 단위별 완료 기준" 을 이 학습 단위 관점에서 본 뷰다.
+5. **연결된 산출물.** 실행 가능한 학습 코드 (Implementation artifact) 와, 이 학습 단위에 속하는 `solutions/<topic-slug>/` 아래 풀이 코드 (Solution artifact) 로의 링크. 코드 자체는 학습 단위 문서에 인라인으로 박지 않는다. 학습 단위 문서는 그 코드를 가리킨다.
+6. **연습 노트 (Practice notes) 및 인터뷰 노트 섹션.** 이 학습 단위에 대해 잘 다듬어진 인터뷰 답안과, 반복적으로 나타나는 문제 해결 통찰을 담는 단일 섹션. 이 섹션을 분할하는 규칙은 아래에서 따로 설명한다.
+7. **마지막 승격 마커.** 클로즈아웃 (close-out) 에서 이 문서가 마지막으로 언제 승격 (Promotion) 되었는지, 그리고 그 승격을 만들어낸 `docs/sessions/` 아래 세션 요약 (Session summary) 이 무엇이었는지를 기록하는 짧은 꼬리표. 다음 세션이 이 문서가 막 안정화된 것인지 오래되어 식은 것인지 한눈에 알 수 있도록 존재한다.
 
-A topic document missing any of these seven items is treated as a draft and
-is not considered durable, even if its content is otherwise good.
+이 일곱 항목 중 하나라도 빠지면, 내용이 아무리 좋아도 그 학습 단위 문서는 초안으로 취급하고 "오래 가는" 문서로 보지 않는다.
 
-## Required teaching structure
+## 필수 교육 구조
 
-The body of the topic document follows a fixed five-part teaching structure.
-The structure is preserved across every topic, regardless of whether the
-topic is a data structure, an algorithm, an OS concept, or an interview
-pattern, so that the learner sees the same shape on every review.
+학습 단위 문서의 본문은 다섯 부분으로 이루어진 고정된 교육 구조를 따른다. 이 구조는 학습 단위가 자료구조든, 알고리즘이든, 운영체제 개념이든, 인터뷰 패턴이든 상관없이 모든 학습 단위에서 동일하게 유지된다. 그래야 학습자가 다시 읽을 때마다 같은 모양을 만나게 된다.
 
-1. **Core claim or concept.** A single, plain-language statement of what the
-   topic is and why it exists. For a data structure, this is the shape and
-   the operation profile (for example, "an array is a contiguous block of
-   memory indexed in O(1)"). For an algorithm, it is the invariant the
-   algorithm maintains.
-2. **Rationale.** Why the core claim holds and what it buys the learner.
-   This section covers Big O for the common operations, the trade-offs
-   against neighboring topics, and the situations in which the topic is the
-   right choice. The rationale is allowed to evolve session over session;
-   that is one of the main reasons promotion exists.
-3. **Real example.** A realistic, non-toy use case that a working engineer
-   would recognize - ideally one the learner has seen or is likely to see in
-   interviews or in production-shaped problems. The example shows the topic
-   in context, not in isolation.
-4. **Easy example.** A deliberately small, minimal example that strips the
-   topic down to its core mechanic. This example is what the learner
-   re-reads on a fast pass and is what an interview answer can be anchored
-   to under time pressure.
-5. **Emphasized takeaways.** A short, explicitly marked list of the points
-   the learner must retain after closing the document - the lines that
-   should still be remembered a week later. Takeaways are written as
-   imperative or declarative statements, not as open questions.
+1. **핵심 주장 또는 개념.** 이 학습 단위가 무엇이고 왜 존재하는지에 대한, 평이한 언어로 된 한 문장. 자료구조라면 모양과 연산 프로필이다 (예: "배열은 O(1) 로 인덱싱되는 연속된 메모리 블록이다"). 알고리즘이라면 그 알고리즘이 유지하는 불변식이다.
+2. **근거.** 왜 핵심 주장이 성립하는지, 그리고 그것이 학습자에게 무엇을 가져다 주는지. 일반적인 연산의 Big O, 인접한 학습 단위와의 트레이드오프, 그리고 이 학습 단위가 올바른 선택이 되는 상황을 다룬다. 근거는 세션이 거듭되면서 진화해도 좋다. 이게 승격이 존재하는 주된 이유 중 하나다.
+3. **현실 예제.** 실제로 일하는 엔지니어가 알아볼 만한, 장난감스럽지 않은 사용 사례 — 학습자가 이미 봤거나 인터뷰 혹은 프로덕션과 비슷한 형태의 문제에서 마주칠 만한 것이 이상적이다. 학습 단위를 고립된 형태가 아니라 맥락 속에서 보여준다.
+4. **간단 예제.** 일부러 작고 최소한으로 줄여서 학습 단위의 핵심 메커니즘만 남긴 예제. 학습자가 빠르게 훑을 때 다시 읽는 예제이고, 시간 압박이 있는 인터뷰에서 답변의 닻으로 삼을 수 있는 예제다.
+5. **강조된 핵심 정리.** 문서를 닫은 뒤에도 학습자가 반드시 가져가야 할 포인트들 — 일주일 뒤에도 여전히 기억해야 할 문장들 — 을 짧게 명시적으로 표시한 목록. 핵심 정리는 열린 질문이 아니라 명령형 또는 단정형 문장으로 쓴다.
 
-The five parts must appear in this order and must be individually labeled.
-A topic document that merges them, drops one, or reorders them is not
-considered to satisfy the format, because the value of the structure is in
-its predictability across topics.
+이 다섯 부분은 반드시 이 순서대로, 각각 라벨을 달아 등장해야 한다. 이 다섯을 합치거나, 하나를 빼거나, 순서를 바꾼 학습 단위 문서는 포맷을 만족하지 않는 것으로 본다. 이 구조의 가치는 학습 단위 사이에서 예측 가능하다는 점에 있기 때문이다.
 
-## Promotion rules for curated topic material
+## 잘 정리된 학습 자료에 대한 승격 규칙
 
-A topic document is built up by repeated promotions out of in-session
-drafts, not by writing the whole document up front. Promotion is the act
-that happens in the close-out path of [LEARNING_FLOW.md](LEARNING_FLOW.md),
-specifically the "promote durable topic material" step.
+학습 단위 문서는 처음부터 통째로 작성하는 게 아니라, 세션 안에서 만들어진 초안들을 반복적으로 승격 (Promotion) 시키면서 쌓아 올린다. 승격은 [LEARNING_FLOW.md](LEARNING_FLOW.md) 의 클로즈아웃 경로, 구체적으로는 "오래 가는 학습 자료 승격" 단계에서 일어나는 행위다.
 
-Content is promoted into the durable topic document only when all of the
-following hold:
+다음 조건이 모두 충족될 때에만 내용이 오래 가는 학습 단위 문서로 승격된다.
 
-- **Stability.** The content survived the learner's questions and
-  challenges within the session without being rewritten more than once.
-  Text that is still being argued with at the end of a session is left as
-  draft for the next session.
-- **Reusability.** The content will plausibly be useful to a future session
-  on the same topic - on a review pass, when starting a re-implementation
-  in another language, or when answering an interview question. One-off
-  rephrasings of an idea that the learner already understands are not
-  promoted.
-- **Correction of a real misconception.** Content that corrected a wrong
-  mental model held earlier in the session is preferred for promotion over
-  content that merely restated something the learner already knew.
-- **Fit with the required teaching structure.** Promoted content goes into
-  one of the five labeled parts (core claim, rationale, real example, easy
-  example, takeaways) or into a structural slot defined by the contract
-  (language coverage, linked artifacts, practice and interview notes). It
-  does not create new top-level sections.
-- **Source identifiable.** The session summary in `docs/sessions/` for the
-  session doing the promotion is updated to record what was promoted, so
-  the topic document's last-promoted marker can point to a real entry.
+- **안정성.** 세션 안에서 학습자의 질문과 도전을 견뎌낸 내용이어야 한다. 한 번 이상 다시 쓰이지 않고 살아남은 것. 세션이 끝날 때까지도 여전히 논쟁 중이던 텍스트는 다음 세션을 위한 초안으로 남겨둔다.
+- **재사용성.** 같은 학습 단위에 대한 미래의 세션에서 — 복습 패스에서든, 다른 언어로 재구현을 시작할 때든, 인터뷰 질문에 답할 때든 — 쓰일 법한 내용. 학습자가 이미 이해하고 있는 아이디어를 일회성으로 말만 바꿔 적은 문장은 승격하지 않는다.
+- **실제 오해의 교정.** 세션 초반에 가지고 있던 잘못된 멘탈 모델을 바로잡은 내용이, 학습자가 이미 알고 있던 것을 다시 진술한 내용보다 승격 대상으로 우선된다.
+- **필수 교육 구조와의 적합성.** 승격된 내용은 다섯 라벨 부분 (핵심 주장, 근거, 현실 예제, 간단 예제, 핵심 정리) 중 하나, 또는 계약이 정의한 구조적 슬롯 (언어 커버리지, 연결된 산출물, 연습 노트 및 인터뷰 노트) 안으로 들어간다. 새로운 최상위 섹션을 만들지 않는다.
+- **출처 식별 가능.** 승격을 수행하는 세션의 `docs/sessions/` 세션 요약을 갱신해서 무엇이 승격되었는지 기록한다. 그래야 학습 단위 문서의 마지막 승격 마커가 실제 항목을 가리킬 수 있다.
 
-Content that does not meet these criteria stays in the session draft and
-either ages out or is reconsidered in a future session. Raw AI transcript
-is never promoted; only learner-validated, structure-fitting material is.
+이 기준을 충족하지 못한 내용은 세션 초안에 남아 있다가 그대로 시들거나, 미래 세션에서 다시 검토된다. 가공되지 않은 AI 트랜스크립트는 절대 승격되지 않는다. 학습자가 검증했고 구조에 들어맞는 내용만 승격된다.
 
-Demotion is allowed and is the inverse rule: a future session that
-discovers a promoted line is wrong, misleading, or no longer concise enough
-removes or rewrites it during a close-out and notes the change in that
-session's summary.
+강등 (demotion) 도 허용되며, 이는 역방향 규칙이다. 미래의 어떤 세션이 이미 승격된 문장이 틀렸거나, 오해의 소지가 있거나, 더 이상 충분히 간결하지 않다는 것을 발견하면 클로즈아웃에서 그것을 제거하거나 다시 쓰고, 그 세션 요약에 변경 사항을 기록한다.
 
-## Practice and interview notes: split rule
+## 연습 노트 및 인터뷰 노트: 분할 규칙
 
-The practice and interview notes section starts as a single section inside
-the topic document. It is split into its own file only when it has grown
-enough that keeping it inline would dilute the teaching structure.
+연습 노트 및 인터뷰 노트 섹션은 학습 단위 문서 내부의 단일 섹션으로 시작한다. 인라인으로 두면 교육 구조를 희석시킬 만큼 커졌을 때만 별도 파일로 분할된다.
 
-The split rule is intentionally conservative so the learner does not face
-extra navigation early on:
+분할 규칙은 학습자가 초반부터 추가적인 탐색 부담을 지지 않도록 의도적으로 보수적이다.
 
-1. **Default - inline.** While the section is small (roughly fewer than
-   ten notes, or anything that still reads in a single quick scroll
-   alongside the teaching structure), it stays inside
-   `docs/topics/<topic-slug>/README.md`. The teaching structure remains the
-   primary reading surface.
-2. **Trigger to split.** Split only when at least one of the following is
-   true:
-   - The notes section has crossed roughly ten distinct entries (interview
-     answers plus problem-solving insights combined) and has started
-     visually competing with the teaching structure on a quick read.
-   - The notes have begun to subdivide naturally into clusters - for
-     example, "interview answers", "common pitfalls", and "problem-solving
-     patterns" - that each have multiple entries.
-   - A future session needs to link directly into the notes from another
-     topic, and the inline section has no stable anchor that holds across
-     promotions.
-3. **How to split.** When the split is triggered, move the section into
-   `docs/topics/<topic-slug>/PRACTICE.md`. Keep a short stub in the topic
-   `README.md` that summarizes the high-value notes and links to
-   `PRACTICE.md` for the full set. The teaching structure (core claim,
-   rationale, real example, easy example, takeaways) stays in the
-   `README.md` and is never moved out.
-4. **No pre-emptive split.** A topic does not start with a `PRACTICE.md`.
-   Creating one before the trigger fires is treated the same as
-   pre-generating topic material in `LEARNING_FLOW.md`: it produces a
-   reference manual the learner does not read.
+1. **기본 — 인라인.** 섹션이 작을 동안에는 (대략 노트가 열 개 미만이거나, 교육 구조 옆에서 한 번에 빠르게 스크롤하며 읽을 수 있는 분량) `docs/topics/<topic-slug>/README.md` 안에 그대로 둔다. 교육 구조가 여전히 주된 읽기 표면이다.
+2. **분할 트리거.** 다음 중 적어도 하나가 참일 때에만 분할한다.
+   - 노트 섹션이 (인터뷰 답안과 문제 해결 통찰을 합쳐서) 대략 열 개 이상의 별개 항목을 넘어섰고, 빠르게 훑을 때 교육 구조와 시각적으로 경합하기 시작한 경우.
+   - 노트가 자연스럽게 클러스터로 나뉘기 시작한 경우 — 예를 들어 "인터뷰 답안", "흔한 함정", "문제 해결 패턴" 처럼 각각 여러 항목을 가진 묶음들이 생긴 경우.
+   - 미래의 어떤 세션이 다른 학습 단위에서 이 노트로 직접 링크를 걸어야 하는데, 인라인 섹션에는 승격을 거치면서도 유지되는 안정된 앵커가 없는 경우.
+3. **분할 방법.** 분할 트리거가 발동되면 섹션을 `docs/topics/<topic-slug>/PRACTICE.md` 로 옮긴다. 학습 단위의 `README.md` 에는 가치가 높은 노트를 요약하고 전체 내용은 `PRACTICE.md` 로 링크하는 짧은 스텁만 남긴다. 교육 구조 (핵심 주장, 근거, 현실 예제, 간단 예제, 핵심 정리) 는 `README.md` 안에 남고 절대 밖으로 옮기지 않는다.
+4. **선제적 분할 금지.** 학습 단위는 `PRACTICE.md` 와 함께 시작하지 않는다. 트리거가 발동되기 전에 미리 만드는 것은 `LEARNING_FLOW.md` 에서 학습 자료를 미리 만들어 두는 행위와 동일하게 취급한다. 학습자가 읽지 않는 레퍼런스 매뉴얼을 만들어낼 뿐이다.
 
-The split rule applies only to the practice and interview notes section.
-Implementation code and problem-set solutions live in their canonical
-folders (`implementations/<language>/<topic-slug>/` and
-`solutions/<topic-slug>/`) from day one and are not subject to this rule -
-they are linked from the topic document rather than embedded in it.
+분할 규칙은 연습 노트 및 인터뷰 노트 섹션에만 적용된다. 학습 코드와 풀이 코드는 첫날부터 정해진 폴더 (`implementations/<language>/<topic-slug>/` 와 `solutions/<topic-slug>/`) 에 둔다. 이들은 분할 규칙의 대상이 아니다 — 학습 단위 문서 안에 박아 넣는 게 아니라 학습 단위 문서에서 링크로 가리킨다.
 
-## How this document is used
+## 이 문서가 사용되는 방식
 
-- [LEARNING_FLOW.md](LEARNING_FLOW.md) references this format in Phase 2
-  (scaffold creation) and Phase 3 (promotion). A close-out that promotes
-  material into a topic document must check it against the contract and
-  the teaching structure described here.
-- [CURRICULUM.md](CURRICULUM.md) references this format as the expected
-  shape of each topic's notes. The per-topic definition of done in the
-  curriculum is satisfied by, among other things, having a topic document
-  that conforms to this format.
-- This format is intentionally stable. Changes to the contract or the
-  teaching structure are made deliberately and are reflected across all
-  existing topic documents in a dedicated session, not silently during a
-  normal topic close-out.
+- [LEARNING_FLOW.md](LEARNING_FLOW.md) 는 페이즈 2 (스캐폴드 생성) 와 페이즈 3 (승격) 에서 이 포맷을 참조한다. 학습 단위 문서로 내용을 승격하는 클로즈아웃은 그 내용을 여기 적힌 계약과 교육 구조에 비추어 확인해야 한다.
+- [CURRICULUM.md](CURRICULUM.md) 는 각 학습 단위 노트의 기대 모양으로 이 포맷을 참조한다. 커리큘럼에 있는 학습 단위별 완료 기준은, 무엇보다 이 포맷에 맞는 학습 단위 문서를 가지는 것으로 충족된다.
+- 이 포맷은 의도적으로 안정적이다. 계약이나 교육 구조의 변경은 신중하게 이뤄지며, 일반적인 학습 단위 클로즈아웃 도중에 조용히 반영되는 것이 아니라 별도 세션에서 기존의 모든 학습 단위 문서에 일괄 반영된다.
