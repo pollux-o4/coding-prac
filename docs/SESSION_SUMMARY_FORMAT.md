@@ -1,238 +1,139 @@
-# Session Summary Format
+# 세션 요약 포맷 (Session summary format)
 
-This is the stable entrypoint that defines the durable session summary
-format for the one-month, AI-guided learning system. Every learning session
-ends by writing a session summary that conforms to this format, so the next
-session can recover what happened without replaying any raw chat transcript.
+이 문서는 한 달짜리 AI 주도 학습 시스템에서 사용하는 세션 요약 (Session summary) 포맷을 정의하는 안정된 진입점이다. 모든 학습 세션 (Session) 은 이 포맷을 따르는 세션 요약을 작성하며 마감 (Close-out) 한다. 그래야 다음 세션이 원본 채팅 로그 (Raw transcript / chat log) 를 다시 재생하지 않고도 이전 세션에서 무슨 일이 있었는지 복원할 수 있다.
 
-The format is intentionally small. It exists so that a session's outcome -
-what was learned, what got stuck, what changed on disk, what comes next -
-becomes a durable artifact at close-out, while the live chat transcript
-remains a throwaway working surface.
+이 포맷은 일부러 작게 잡았다. 한 세션의 결과 — 무엇을 배웠는지, 어디서 막혔는지, 디스크에 무엇이 바뀌었는지, 다음에 무엇을 할지 — 가 마감 시점에 영속적인 산출물로 남도록 하기 위해서다. 반면 라이브 채팅 로그는 일회용 작업 공간으로만 다룬다.
 
-## What a session summary is for
+## 세션 요약은 무엇에 쓰는가
 
-A session summary is the close-out artifact of a single learning session.
-It is read by:
+세션 요약은 한 학습 세션의 마감 산출물이다. 다음에서 읽힌다.
 
-- The **next session** opening against [PROGRESS.md](PROGRESS.md), to
-  recover the previous session's context (one summary per session, the most
-  recent one is pointed to from the topic's "Latest session" field).
-- The **topic document** under `docs/topics/<topic-slug>/README.md`, whose
-  last-promoted marker (see [TOPIC_FORMAT.md](TOPIC_FORMAT.md)) points back
-  to the session summary that produced the latest promotion.
-- A **future review pass** on the same topic, to see what blockers or
-  confusions surfaced and whether they have since been resolved.
+- **다음 세션** 이 [PROGRESS.md](PROGRESS.md) 를 열어 시작할 때, 이전 세션의 컨텍스트를 복원하기 위해 읽는다 (세션당 요약은 하나이며, 가장 최근 요약이 해당 학습 단위 (Topic) 의 "Latest session" 필드에서 가리켜진다).
+- **학습 단위 문서** 인 `docs/topics/<topic-slug>/README.md` 의 last-promoted 마커 ([TOPIC_FORMAT.md](TOPIC_FORMAT.md) 참고) 가, 최신 promotion 을 만들어낸 세션 요약을 역으로 가리킨다.
+- 같은 학습 단위에 대한 **추후 리뷰** 에서, 어떤 블로커 (Blockers) 나 혼동이 떠올랐는지 그리고 그 사이에 해소되었는지를 보기 위해 읽힌다.
 
-A session summary is not a meeting note, not a tutorial, and not a copy of
-the AI dialogue. It captures the session's outcome compactly enough that
-the next session can act on it in seconds.
+세션 요약은 회의록이 아니고, 튜토리얼도 아니며, AI 대화의 사본도 아니다. 다음 세션이 몇 초 안에 행동을 시작할 수 있도록 세션의 결과만 압축해서 담는다.
 
-## Storage location and naming
+## 저장 위치와 파일명 규칙
 
-Every session summary lives as a single Markdown file under
-`docs/sessions/`. There is exactly one summary file per session.
+모든 세션 요약은 `docs/sessions/` 아래 마크다운 파일 하나로 존재한다. 한 세션당 요약 파일은 정확히 하나다.
 
-The naming convention is:
+파일명 규칙은 다음과 같다.
 
 ```
 docs/sessions/<YYYY-MM-DD>-<topic-slug>-<short-slug>.md
 ```
 
-- `<YYYY-MM-DD>` is the session's local date, so a directory listing reads
-  in chronological order.
-- `<topic-slug>` matches the topic folder under `docs/topics/`, so a future
-  session can find every summary that touched a given topic by prefix.
-- `<short-slug>` is a 2-4 word kebab-case marker of what the session did
-  (for example, `array-python-impl`, `linked-list-concept`,
-  `bigo-followups`). It exists so two sessions on the same date and topic
-  can be told apart without opening either file.
+- `<YYYY-MM-DD>` 는 세션의 로컬 날짜다. 디렉터리 목록이 시간 순으로 정렬되도록 하기 위함이다.
+- `<topic-slug>` 는 `docs/topics/` 아래의 학습 단위 폴더명과 일치시킨다. 그래야 다음 세션이 특정 학습 단위를 다룬 모든 요약을 접두사로 찾아낼 수 있다.
+- `<short-slug>` 는 그 세션이 한 일을 2-4 단어 kebab-case 로 표시한 마커다 (예: `array-python-impl`, `linked-list-concept`, `bigo-followups`). 같은 날짜, 같은 학습 단위에 두 개의 세션이 있을 때 파일을 열지 않고도 구분할 수 있게 하기 위함이다.
 
-Sessions that span more than one topic still produce exactly one summary;
-the file uses the primary topic in the filename and the secondary topic is
-recorded inside the "learned scope" section. Sessions are not retroactively
-renamed or moved; once a summary is written, its path is stable.
+여러 학습 단위에 걸친 세션이라도 요약은 정확히 하나만 만든다. 파일명에는 주(主) 학습 단위를 쓰고, 부(副) 학습 단위는 "학습 범위 (Learned scope)" 섹션 안에 기록한다. 세션 요약은 사후에 이름을 바꾸거나 옮기지 않는다. 한 번 쓰면 그 경로는 고정이다.
 
-## Required fields
+## 필수 필드
 
-Every session summary has exactly the following five fields, in this order
-and individually labeled. A summary missing any field is treated as
-incomplete; the close-out path is not finished until all five are present.
+모든 세션 요약은 정확히 아래 다섯 개 필드를 이 순서대로, 각각 라벨을 붙여서 가진다. 한 필드라도 빠진 요약은 미완으로 본다. 다섯 개가 모두 있기 전에는 마감 경로가 끝난 것으로 치지 않는다.
 
-### 1. Learned scope
+### 1. 학습 범위 (Learned scope)
 
-A short, plain-language record of what the session actually covered. This
-field answers "what did this session work on, and against which
-checkpoint".
+이 세션이 실제로 무엇을 다뤘는지를 짧고 평이한 말로 적는 필드다. "이 세션은 무엇을, 어느 학습 지점 (Checkpoint) 을 대상으로 작업했는가" 에 답한다.
 
-Concretely, it states:
+구체적으로 다음을 적는다.
 
-- The checkpoint that was being worked, as selected in Phase 1 of
-  [LEARNING_FLOW.md](LEARNING_FLOW.md) (topic, target artifact, acceptance
-  criterion).
-- What of that checkpoint was actually completed in the session, in one to
-  three sentences.
-- Any secondary topic the session touched, if the work crossed a topic
-  boundary.
+- 이 세션이 작업하던 학습 지점 — [LEARNING_FLOW.md](LEARNING_FLOW.md) 의 Phase 1 에서 선택된 것 (학습 단위, 목표 산출물, 수용 기준).
+- 그 학습 지점 중 이번 세션에서 실제로 완료된 부분을 1-3 문장으로.
+- 작업이 학습 단위 경계 (Boundary) 를 넘어갔다면, 세션이 건드린 부 학습 단위.
 
-This field is written even when the session did not finish its checkpoint -
-in that case it records the partial progress and the "next step" field
-records what remains.
+이 필드는 세션이 학습 지점을 다 끝내지 못한 경우에도 작성한다. 그런 경우에는 부분 진척을 여기에 적고, 남은 분량은 "다음 단계 (Next step)" 필드에 적는다.
 
-### 2. Blockers or confusion
+### 2. 블로커 또는 혼동 (Blockers or confusion)
 
-A short, honest record of what got stuck, what was misunderstood, and what
-the learner is still uncertain about. This field is the one that most
-distinguishes a session summary from a triumphant changelog.
+무엇에서 막혔고, 무엇을 잘못 이해했고, 학습자가 여전히 확신이 없는 지점이 어디인지를 짧고 정직하게 기록하는 필드다. 세션 요약을 자랑스러운 변경 로그와 구분짓는 가장 큰 차이가 바로 이 필드다.
 
-It captures:
+다음을 담는다.
 
-- Wrong mental models the session had to correct (briefly, so the next
-  session can recognize the same trap).
-- Questions that were raised but not resolved, and the reason they were
-  deferred.
-- Tooling or environment friction that slowed the session down enough to
-  matter to a future session.
+- 세션 중에 교정해야 했던 잘못된 멘탈 모델을 짧게 (다음 세션이 같은 함정을 알아볼 수 있을 정도면 됨).
+- 제기됐지만 해소하지 못한 질문과, 그것을 미룬 이유.
+- 다음 세션이 신경 쓸 만큼 이번 세션의 진행을 늦춘 도구·환경 마찰.
 
-"None this session" is an acceptable value; leaving the field out is not.
+"이번 세션은 없음" 도 적법한 값이다. 필드 자체를 비워두는 것은 적법하지 않다.
 
-### 3. Changed artifacts
+### 3. 변경된 산출물 (Changed artifacts)
 
-A list of the durable artifacts the session created or modified, by path.
-This field is what makes the summary actionable without re-running any
-commands or scanning the working tree.
+이 세션이 만들거나 수정한 영속 산출물을 경로 단위로 나열하는 필드다. 이 필드 덕분에 명령어를 다시 돌리거나 작업 트리를 훑지 않고도 요약만으로 행동할 수 있다.
 
-Each entry is one line of the form:
+각 항목은 다음 형식의 한 줄이다.
 
 ```
-<path> - <create | update | promote> - <short reason>
+<path> - <create | update | promote> - <짧은 사유>
 ```
 
-The artifacts that belong in this list are the ones the close-out path in
-[LEARNING_FLOW.md](LEARNING_FLOW.md) produces or touches:
+이 목록에 들어가는 산출물은 [LEARNING_FLOW.md](LEARNING_FLOW.md) 의 마감 경로가 만들어내거나 건드리는 것들이다.
 
-- Topic material under `docs/topics/<topic-slug>/` (especially promotions
-  into `README.md`).
-- Implementation code under `implementations/<language>/<topic-slug>/`.
-- Problem-set solutions under `solutions/<topic-slug>/`.
-- The session summary file itself does not list itself.
-- [PROGRESS.md](PROGRESS.md) is always changed by a close-out; it is listed
-  for completeness but does not need a per-field breakdown - the
-  per-topic-field changes belong in PROGRESS.md itself, not duplicated here.
+- `docs/topics/<topic-slug>/` 아래의 학습 자료 (Topic material), 특히 `README.md` 로의 promotion.
+- `implementations/<language>/<topic-slug>/` 아래의 학습 코드 (Implementation artifact).
+- `solutions/<topic-slug>/` 아래의 문제집 풀이 코드 (Solution artifact).
+- 세션 요약 파일 자신은 스스로를 목록에 적지 않는다.
+- [PROGRESS.md](PROGRESS.md) 는 마감마다 항상 바뀌므로 완전성을 위해 적되, 필드 단위 분해는 굳이 적지 않는다. 학습 단위별 필드 변경은 PROGRESS.md 본문에 들어가는 것이지 여기서 중복할 필요는 없다.
 
-If a file was created and immediately abandoned (for example, a scratch
-draft that never got promoted), it is not listed. Only durable changes
-appear.
+만들었다가 곧바로 버린 파일 (예: promotion 되지 않은 임시 초안) 은 적지 않는다. 영속적인 변경만 적는다.
 
-### 4. Next step
+### 4. 다음 단계 (Next step)
 
-The single next checkpoint identified by the session, written so that
-Phase 1 of the next session can honor it directly. This is the same value
-that the close-out path writes into the "Next checkpoint" field of the
-relevant topic row in [PROGRESS.md](PROGRESS.md); the two must agree.
+이 세션이 식별한 다음 학습 지점 단 하나를, 다음 세션의 Phase 1 이 그대로 받아 쓸 수 있는 형태로 적는다. 이 값은 마감 경로가 해당 학습 단위 행의 "Next checkpoint" 필드에 [PROGRESS.md](PROGRESS.md) 로 적는 값과 동일해야 한다. 두 곳의 값은 일치해야 한다.
 
-The next step records:
+다음 단계는 다음을 기록한다.
 
-- The topic the next checkpoint belongs to.
-- The specific artifact the next session is expected to produce (for
-  example, "Java re-implementation of `array` with one trade-off note vs.
-  the Python version", not "more arrays").
-- The acceptance criterion that will mark that checkpoint as done.
+- 그 다음 학습 지점이 속한 학습 단위.
+- 다음 세션이 만들어내야 할 구체적 산출물 (예: "Python 버전 대비 트레이드오프 노트 1개와 함께 `array` 의 Java 재구현" 처럼. "배열 더" 같은 식은 안 됨).
+- 그 학습 지점을 끝났다고 판단할 수용 기준.
 
-If a session ends without a clear next step (for example, the curriculum
-just crossed a week boundary and the next topic has not been opened yet),
-the next step field still names a concrete first move - typically "open the
-first topic of Week N from [CURRICULUM.md](CURRICULUM.md) and scaffold its
-folder". An empty next step is not allowed.
+명확한 다음 단계 없이 세션이 끝나는 경우 (예: 커리큘럼이 막 주차 경계를 넘었고 다음 학습 단위가 아직 열리지 않은 경우) 에도 다음 단계 필드는 구체적인 첫 행동 — 보통 "[CURRICULUM.md](CURRICULUM.md) 에서 N 주차의 첫 학습 단위를 열고 폴더를 스캐폴딩한다" — 을 명시해야 한다. 빈 다음 단계는 허용하지 않는다.
 
-### 5. Evidence links
+### 5. 증거 링크 (Evidence links)
 
-A short list of links that back up the session summary's claims. Evidence
-is what lets a future session trust the summary without re-running the
-session.
+세션 요약의 주장을 뒷받침하는 링크들을 짧게 나열한다. 증거 링크가 있어야 다음 세션이 세션을 다시 돌리지 않고도 요약을 신뢰할 수 있다.
 
-Typical entries:
+전형적인 항목.
 
-- The topic `README.md` whose promotion this session caused.
-- The implementation file(s) added or updated.
-- The problem-set solution file(s) added.
-- A specific commit hash or pull request, when the session's changes were
-  pushed.
-- An external reference (book chapter, paper section, course lesson) that
-  the learner consulted, when the session relied on it.
+- 이 세션이 promotion 을 일으킨 학습 단위의 `README.md`.
+- 추가하거나 갱신한 학습 코드 파일.
+- 추가한 문제집 풀이 파일.
+- 세션 변경분을 푸시한 경우, 특정 커밋 해시나 PR.
+- 세션이 의지한 외부 참고자료 (책 챕터, 논문 섹션, 코스 강의 등).
 
-Evidence links are bare links or short Markdown links; they are not
-annotated explanations. The annotation lives in the surrounding field that
-referenced the link.
+증거 링크는 그냥 링크이거나 짧은 마크다운 링크다. 주석을 다는 곳이 아니다. 설명은 그 링크를 참조한 본문 필드 안에 들어간다.
 
-## Integration with the progress contract
+## 진행 상태 문서와의 통합
 
-The session summary integrates with [PROGRESS.md](PROGRESS.md) by being
-**linked from** the per-topic "Latest session" field, never copied into it.
+세션 요약은 [PROGRESS.md](PROGRESS.md) 와, 학습 단위별 "Latest session" 필드에서 **링크되는** 방식으로 통합된다. 절대 본문이 PROGRESS.md 안으로 복사되지 않는다.
 
-The integration rules are:
+통합 규칙은 다음과 같다.
 
-- The "Latest session" field in `PROGRESS.md` holds a link to exactly one
-  session summary file under `docs/sessions/`, plus its date. Older
-  summaries for the same topic stay in the folder but are not pointed at
-  from `PROGRESS.md`.
-- `PROGRESS.md` does not embed any field of the session summary inline. In
-  particular, the long-form text of "learned scope", "blockers or
-  confusion", and the evidence-link list never appears in `PROGRESS.md`.
-  Those belong in the summary file.
-- The session summary's "next step" field and `PROGRESS.md`'s "Next
-  checkpoint" field for the same topic carry the same checkpoint. They are
-  written together in the same close-out step (Phase 3, step 5 of
-  [LEARNING_FLOW.md](LEARNING_FLOW.md)) and must not be allowed to drift.
-- Topic `README.md` files reference session summaries through their
-  last-promoted marker, as defined in [TOPIC_FORMAT.md](TOPIC_FORMAT.md).
-  That reference is the second supported link into `docs/sessions/`; the
-  first is the `PROGRESS.md` "Latest session" field.
+- `PROGRESS.md` 의 "Latest session" 필드는 `docs/sessions/` 아래 세션 요약 파일 정확히 하나와 그 날짜를 담는다. 같은 학습 단위의 더 오래된 요약들은 폴더에 남지만 `PROGRESS.md` 에서 가리키지는 않는다.
+- `PROGRESS.md` 는 세션 요약의 어떤 필드도 본문에 박지 않는다. 특히 "학습 범위", "블로커 또는 혼동" 의 장문 텍스트와 증거 링크 목록은 절대 `PROGRESS.md` 에 등장하지 않는다. 이들은 요약 파일 안에 있어야 한다.
+- 같은 학습 단위에 대해 세션 요약의 "다음 단계" 필드와 `PROGRESS.md` 의 "Next checkpoint" 필드는 같은 학습 지점을 담는다. 둘은 같은 마감 단계 ([LEARNING_FLOW.md](LEARNING_FLOW.md) 의 Phase 3, 5번 단계) 에서 함께 쓰이고, 어긋나게 두면 안 된다.
+- 학습 단위 `README.md` 파일은 [TOPIC_FORMAT.md](TOPIC_FORMAT.md) 에 정의된 last-promoted 마커를 통해 세션 요약을 참조한다. 이것이 `docs/sessions/` 로 들어오는 두 번째 공인된 링크이고, 첫 번째는 `PROGRESS.md` 의 "Latest session" 필드다.
 
-This boundary preserves the progress contract's second part: `PROGRESS.md`
-stays compact and does not carry long logs. The session summary is the
-durable place where the long-ish narrative of a session lives.
+이 경계가 진행 상태 문서 (Progress document) 계약의 두 번째 부분을 지켜준다. 즉 `PROGRESS.md` 는 컴팩트하게 유지되고 긴 로그를 짊어지지 않는다. 세션 요약이 바로, 다소 긴 호흡의 세션 서사가 영속적으로 살아 있는 자리다.
 
-## Raw AI transcripts are not durable artifacts
+## 원본 AI 채팅 로그는 영속 산출물이 아니다
 
-The raw transcript of the AI tutor session - the back-and-forth chat
-between the learner and the AI - is not a durable learning artifact and is
-not stored under `docs/sessions/`, `docs/topics/`, or anywhere else in the
-repository.
+AI 튜터 세션의 원본 채팅 로그 — 학습자와 AI 사이의 주고받음 — 는 영속 학습 산출물이 아니다. `docs/sessions/`, `docs/topics/`, 그 외 저장소 어디에도 보관하지 않는다.
 
-The reasons are intentional, not incidental:
+그 이유는 의도된 것이지 우발적이지 않다.
 
-- **Volume.** A single session's transcript easily exceeds the entire
-  durable artifact set for the topic it covered. Keeping transcripts would
-  swamp the durable surface, exactly the failure mode the progress
-  contract is set up to prevent.
-- **Signal-to-noise.** Most lines in a transcript are scaffolding, false
-  starts, rephrasings, and corrections the learner has already absorbed.
-  The session summary is the deliberate distillation of the signal.
-- **Promotion direction.** [TOPIC_FORMAT.md](TOPIC_FORMAT.md) already
-  states that raw AI transcript is never promoted into a topic document.
-  This format extends that rule outward: the transcript does not live as
-  its own first-class artifact either.
+- **분량.** 한 세션의 원본 채팅 로그는 그 세션이 다룬 학습 단위 전체의 영속 산출물 묶음을 가뿐히 넘긴다. 채팅 로그를 보관하기 시작하면 영속 표면이 잠겨버리는데, 그것이야말로 진행 상태 문서 계약이 막으려는 실패 양상이다.
+- **신호 대 잡음비.** 채팅 로그의 대부분 줄은 발판 노릇, 헛스윙, 다시 말하기, 학습자가 이미 흡수한 교정이다. 세션 요약은 그 안에서 신호만 의도적으로 증류한 것이다.
+- **Promotion 방향.** [TOPIC_FORMAT.md](TOPIC_FORMAT.md) 는 이미, 원본 AI 채팅 로그는 학습 단위 문서로 promotion 되지 않는다고 명시한다. 이 포맷은 그 규칙을 바깥쪽으로 확장한다. 채팅 로그는 그 자체로 1급 산출물로도 살아남지 않는다.
 
-If a specific exchange from a session needs to survive (a sharpened
-interview answer, a corrected misconception, a worked example), the
-mechanism is promotion into a topic `README.md` or capture as a labeled
-field inside the session summary - not preserving the transcript verbatim.
+세션의 어떤 특정 대화가 살아남아야 한다면 (다듬어진 면접 답변, 교정된 오개념, 풀어낸 예제 등), 그 메커니즘은 학습 단위 `README.md` 로의 promotion 이거나 세션 요약 안에 라벨링된 필드로 담는 것이다. 채팅 로그를 그대로 보존하는 것은 메커니즘이 아니다.
 
-A session that ends without producing a session summary conforming to this
-format is treated the same as a session that did not happen: the next
-session cannot recover its state, and the close-out path of
-[LEARNING_FLOW.md](LEARNING_FLOW.md) is not considered finished.
+이 포맷에 맞는 세션 요약을 만들지 못하고 끝난 세션은, 일어나지 않은 세션과 동일하게 취급한다. 다음 세션이 상태를 복원할 수 없고, [LEARNING_FLOW.md](LEARNING_FLOW.md) 의 마감 경로도 끝난 것으로 보지 않는다.
 
-## Related documents
+## 관련 문서
 
-- [LEARNING_FLOW.md](LEARNING_FLOW.md) - the close-out path that writes the
-  session summary (Phase 3, step 4) and reads it on the next session.
-- [PROGRESS.md](PROGRESS.md) - the source of truth that links to the latest
-  session summary per topic and carries the matching "Next checkpoint"
-  field.
-- [TOPIC_FORMAT.md](TOPIC_FORMAT.md) - the topic document format whose
-  last-promoted marker points back at the session summary that produced the
-  promotion.
-- [CURRICULUM.md](CURRICULUM.md) - the study order and per-topic definition
-  of done that the session summary's "next step" field is written against.
+- [LEARNING_FLOW.md](LEARNING_FLOW.md) — 세션 요약을 쓰는 마감 경로 (Phase 3, 4번 단계) 와, 다음 세션이 그것을 읽는 자리.
+- [PROGRESS.md](PROGRESS.md) — 학습 단위별로 최신 세션 요약을 링크하고, 그에 대응하는 "Next checkpoint" 필드를 가지는 단일 진실 원천.
+- [TOPIC_FORMAT.md](TOPIC_FORMAT.md) — last-promoted 마커가 promotion 을 만들어낸 세션 요약을 역으로 가리키는 학습 단위 문서 포맷.
+- [CURRICULUM.md](CURRICULUM.md) — 세션 요약의 "다음 단계" 필드가 기준으로 삼는 학습 순서와 학습 단위별 완료 정의.

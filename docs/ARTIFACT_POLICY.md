@@ -1,282 +1,126 @@
-# Artifact Policy
+# 산출물 정책 (Artifact Policy)
 
-This is the stable entrypoint that defines the artifact boundary for the
-one-month, AI-guided learning system. Every session - whether driven by the
-learner alone or paired with an AI tutor - stores its work in one of three
-artifact kinds, in one of three canonical locations, and links between them
-rather than duplicating content.
+이 문서는 한 달짜리 AI 보조 학습 시스템에서 산출물 경계(Boundary)를 정의하는 안정적인 진입점이다. 학습자가 혼자 진행하든 AI 튜터와 짝지어 진행하든, 모든 세션 (Session) 은 작업 결과를 세 가지 산출물 종류 중 하나로, 세 가지 표준 위치 중 하나에 저장하며, 내용을 중복으로 복사하는 대신 서로 링크로 연결한다.
 
-The policy is intentionally narrow. It exists so that repeated study
-sessions on the same topic accumulate into a sharper topic document and a
-growing set of runnable artifacts, instead of into parallel piles of notes
-that drift apart.
+이 정책은 의도적으로 좁은 범위만 다룬다. 같은 학습 단위 (Topic) 를 여러 세션에 걸쳐 반복해서 공부할 때, 평행한 메모 더미가 따로따로 쌓이며 어긋나는 대신, 더 날카로워진 학습 단위 문서와 실행 가능한 산출물들이 점점 늘어나도록 누적시키기 위해 존재한다.
 
-## The three artifact kinds
+## 세 가지 산출물 종류
 
-The system recognizes exactly three kinds of durable artifact. Every piece
-of content produced by a session belongs to exactly one of them, and each
-kind has its own canonical location and its own retention rules.
+이 시스템은 정확히 세 가지 종류의 영속적 산출물만 인정한다. 세션에서 만들어진 모든 콘텐츠는 그중 정확히 하나에 속하며, 각 종류는 자기만의 표준 위치와 보존 규칙을 가진다.
 
-| Artifact kind | What it holds | Canonical location |
-|---------------|---------------|--------------------|
-| Topic material (explanatory) | Promoted concept notes, rationale, real and easy examples, takeaways, language-comparison notes, interview answers, and the language-coverage table that points at implementation evidence. | `docs/topics/<topic-slug>/README.md` (and `PRACTICE.md` once the split rule in [TOPIC_FORMAT.md](TOPIC_FORMAT.md) fires). |
-| Learner implementation code | Runnable, learner-written or learner-and-AI co-developed implementations of the data structure, algorithm, or OS-concept demo that the topic teaches. | `implementations/<language>/<topic-slug>/`, one folder per language in the rotation (Python primary, then Java, C, TypeScript). |
-| Problem solution code | Runnable solutions to problem-set questions (LeetCode-style or interview-style) that the topic motivates. | `solutions/<topic-slug>/`, grouped by topic rather than by language so that multiple language attempts at the same problem stay together. |
+| 산출물 종류 | 무엇을 담는가 | 표준 위치 |
+|-------------|---------------|-----------|
+| 학습 자료 (Topic material, 설명용) | 승격된 개념 노트, 근거, 실제 예시와 쉬운 예시, 핵심 정리, 언어 간 비교 노트, 인터뷰 답변, 그리고 학습 코드 증거를 가리키는 언어 커버리지 표. | `docs/topics/<topic-slug>/README.md` ([TOPIC_FORMAT.md](TOPIC_FORMAT.md) 의 분할 규칙이 발동되면 `PRACTICE.md` 도 포함). |
+| 학습 코드 (Implementation artifact) | 학습 단위에서 가르치는 자료구조, 알고리즘, 또는 운영체제 개념 데모를 학습자가 작성 (Learner-authored) 했거나 학습자와 AI 가 공동 작성 (Co-developed) 한, 실행 가능한 구현물. | `implementations/<language>/<topic-slug>/`. 로테이션에 포함된 언어별로 한 폴더 (Python 우선, 이어서 Java, C, TypeScript). |
+| 풀이 코드 (Solution artifact) | 학습 단위가 동기를 부여하는 문제 세트 (LeetCode 스타일이나 인터뷰 스타일) 의 실행 가능한 풀이. | `solutions/<topic-slug>/`. 같은 문제에 대한 여러 언어 시도를 함께 묶어두기 위해 언어별이 아니라 학습 단위별로 묶는다. |
 
-These three kinds line up with the per-topic definition of done in
-[CURRICULUM.md](CURRICULUM.md) (concept explained, language implementations
-landed, problems solved) and with the close-out steps in
-[LEARNING_FLOW.md](LEARNING_FLOW.md) (promote durable topic material, then
-place runnable artifacts in their canonical folders, then record artifact
-links).
+이 세 가지 종류는 [CURRICULUM.md](CURRICULUM.md) 의 학습 단위별 완료 기준 (개념 설명, 언어별 구현 안착, 문제 풀이) 과, [LEARNING_FLOW.md](LEARNING_FLOW.md) 의 마무리 단계 (영속화할 학습 자료 승격 → 실행 가능한 산출물을 표준 폴더에 배치 → 산출물 링크 기록) 와 정렬되어 있다.
 
-Two locations referenced elsewhere in the system are intentionally outside
-this taxonomy because they are not topic-scoped durable artifacts:
+시스템 내 다른 곳에서 참조되는 두 위치는 학습 단위 범위의 영속적 산출물이 아니기 때문에 이 분류 체계 바깥에 의도적으로 두었다.
 
-- `docs/sessions/<session-id>.md` is a session summary, not a topic
-  artifact. It records what happened in one session and what should become
-  the next checkpoint. It is governed by step 4 of the close-out path in
-  [LEARNING_FLOW.md](LEARNING_FLOW.md).
-- [PROGRESS.md](PROGRESS.md) is the compact index over the three artifact
-  kinds. It points at them; it does not contain them. The evidence-link
-  boundary defined in `PROGRESS.md` is the read side of the same boundary
-  this document defines on the write side.
+- `docs/sessions/<session-id>.md` 는 세션 요약이지 학습 단위 산출물이 아니다. 한 세션에서 어떤 일이 있었는지, 다음 체크포인트로 무엇이 되어야 하는지를 기록한다. [LEARNING_FLOW.md](LEARNING_FLOW.md) 의 마무리 경로 4단계가 이 문서를 관장한다.
+- [PROGRESS.md](PROGRESS.md) 는 세 산출물 종류를 가로지르는 컴팩트한 색인이다. 산출물을 가리킬 뿐, 산출물을 담지는 않는다. `PROGRESS.md` 에서 정의되는 증거 링크 경계는, 이 문서가 쓰기 (write) 쪽에서 정의하는 그 경계의 읽기 (read) 쪽이다.
 
-## Boundary between topic material and code artifacts
+## 학습 자료와 코드 산출물 사이의 경계
 
-Topic material explains; code artifacts run. The boundary is enforced by
-where each kind of content lives and by what each kind of content is
-allowed to contain.
+학습 자료는 설명하고, 코드 산출물은 실행한다. 이 경계는 각 종류의 콘텐츠가 어디에 위치하는지, 그리고 어떤 내용을 담을 수 있는지를 통해 강제된다.
 
-### What topic material is for
+### 학습 자료의 역할
 
-Topic material under `docs/topics/<topic-slug>/` is explanatory. It carries
-the five-part teaching structure required by [TOPIC_FORMAT.md](TOPIC_FORMAT.md)
-(core claim, rationale, real example, easy example, emphasized takeaways),
-the language-coverage table, the linked-artifacts section, and the
-practice-and-interview notes.
+`docs/topics/<topic-slug>/` 아래의 학습 자료는 설명용이다. [TOPIC_FORMAT.md](TOPIC_FORMAT.md) 가 요구하는 다섯 부분 교육 구조 (핵심 주장, 근거, 실제 예시, 쉬운 예시, 강조된 핵심 정리) 와 언어 커버리지 표, 연결된 산출물 섹션, 그리고 연습과 인터뷰 노트를 담는다.
 
-Topic material is allowed to contain:
+학습 자료가 담을 수 있는 것:
 
-- Plain-language explanation of the topic in the five labeled teaching
-  parts.
-- Short illustrative snippets - the smallest fragment that makes a teaching
-  point land, such as a three-line loop showing the index arithmetic of an
-  array or a single recursive definition of tree depth. These snippets are
-  pedagogical, not runnable; they are not expected to be a complete program
-  and are not what `implementations/` exists to hold.
-- The language-coverage table listing Python, Java, C, and TypeScript with
-  per-language status and a link to each language's implementation folder.
-- The linked-artifacts section listing the runnable implementations and
-  problem solutions for this topic.
-- Sharpened interview answers and recurring problem-solving insights, per
-  the practice-and-interview notes rules in [TOPIC_FORMAT.md](TOPIC_FORMAT.md).
+- 다섯 부분으로 라벨링된 교육 구조 안에서, 학습 단위에 대한 평이한 언어의 설명.
+- 짧은 예시 스니펫 — 교육적 포인트가 와닿게 하는 가장 작은 조각. 예를 들어 배열 인덱스 산술을 보여주는 세 줄짜리 루프나 트리 깊이의 한 줄짜리 재귀 정의 같은 것. 이 스니펫들은 교육용이지 실행용이 아니며, 완전한 프로그램일 필요가 없고 `implementations/` 가 담으려는 대상도 아니다.
+- 언어 커버리지 표. Python, Java, C, TypeScript 를 나열하며, 언어별 상태와 각 언어 구현 폴더 링크를 포함한다.
+- 이 학습 단위에 해당하는 실행 가능한 구현물과 문제 풀이를 나열하는 연결된 산출물 섹션.
+- [TOPIC_FORMAT.md](TOPIC_FORMAT.md) 의 연습·인터뷰 노트 규칙에 따라, 다듬어진 인터뷰 답변과 반복적으로 등장하는 문제 풀이 인사이트.
 
-Topic material is not allowed to contain:
+학습 자료가 담을 수 없는 것:
 
-- A full runnable implementation of the topic. If a code block is large
-  enough to compile and run as a program, it belongs under
-  `implementations/<language>/<topic-slug>/` and is linked from the topic
-  document instead.
-- A full problem solution. Even when a topic motivates a specific
-  LeetCode-style question, the solution code lives under
-  `solutions/<topic-slug>/` and is linked from the topic document.
-- Re-pasted copies of code that already exists under `implementations/` or
-  `solutions/`. The topic document links to that code; it does not mirror
-  it.
-- Raw AI transcript, throwaway scratch work, or "just-in-case" alternative
-  explanations. Promotion rules in [TOPIC_FORMAT.md](TOPIC_FORMAT.md)
-  already forbid these; this policy reinforces that they are also not
-  allowed to leak into the topic document as code blocks.
+- 학습 단위의 완전히 실행 가능한 구현. 코드 블록이 프로그램으로 컴파일·실행될 수 있을 만큼 크다면, 그것은 `implementations/<language>/<topic-slug>/` 아래에 속하며 학습 자료 문서에서는 링크만 건다.
+- 완전한 문제 풀이. 어떤 학습 단위가 특정 LeetCode 스타일 문제를 동기로 삼더라도, 풀이 코드는 `solutions/<topic-slug>/` 아래에 두고 학습 자료 문서에서는 링크만 건다.
+- `implementations/` 나 `solutions/` 에 이미 있는 코드를 다시 붙여 넣은 사본. 학습 자료 문서는 그 코드로 링크를 걸 뿐, 그 코드를 거울처럼 비추지 않는다.
+- 원본 AI 대화 기록, 일회용 임시 작업, "혹시 모르니까" 식으로 남겨둔 대안 설명. [TOPIC_FORMAT.md](TOPIC_FORMAT.md) 의 승격 규칙이 이미 이런 것들을 금지하며, 이 정책은 그것들이 학습 자료 문서에 코드 블록으로도 새어 들어와선 안 된다는 점을 다시 강조한다.
 
-### What learner implementation code is for
+### 학습 코드의 역할
 
-`implementations/<language>/<topic-slug>/` holds runnable, learner-authored
-or learner-and-AI co-developed implementations of the topic itself - the
-data structure, algorithm, or OS-concept demo that the topic teaches.
+`implementations/<language>/<topic-slug>/` 는 학습 단위 그 자체 — 그 학습 단위가 가르치는 자료구조, 알고리즘, 운영체제 개념 데모 — 의 실행 가능하며 학습자 작성 또는 학습자·AI 공동 작성 구현물을 담는다.
 
-These artifacts have two non-negotiable properties:
+이 산출물은 타협 불가능한 두 가지 속성을 가진다.
 
-1. **Runnable as study code.** The implementation runs on its own in the
-   target language, exercises the topic's main operations, and is shaped
-   so the learner can read it back later. It is not just a syntactic copy
-   of a reference implementation.
-2. **Learner-authored or co-developed, not an answer dump.** The code is
-   produced by the learner working through the topic, optionally with AI
-   assistance during the session. Code that the learner pasted in without
-   working through, or that the AI generated end-to-end without the
-   learner stepping through it, is not preserved here. The retention
-   criterion is "this is study code the learner can defend on a re-read",
-   not "this compiles".
+1. **학습용 코드로서 실행 가능할 것.** 구현물은 대상 언어에서 단독으로 실행되고, 해당 학습 단위의 주요 연산들을 실제로 사용하며, 학습자가 나중에 다시 읽어볼 수 있는 형태로 다듬어져 있다. 단순히 레퍼런스 구현을 문법만 베껴 옮긴 것이 아니다.
+2. **학습자 작성 또는 공동 작성이며, 정답 덤프 (Answer dump) 가 아닐 것.** 코드는 학습자가 학습 단위를 헤쳐나가면서, 필요하면 세션 중 AI 의 보조를 받아 만들어진다. 학습자가 작업 과정 없이 그냥 붙여 넣은 코드나, 학습자가 한 줄도 짚어보지 않은 채 AI 가 처음부터 끝까지 생성한 코드는 여기에 보존되지 않는다. 보존 기준은 "이건 학습자가 다시 읽었을 때 방어할 수 있는 학습용 코드인가" 이지, "컴파일은 되는가" 가 아니다.
 
-The "co-developed" allowance exists because the curriculum explicitly
-assumes AI-assisted study. AI is a legitimate collaborator inside the
-session. What the policy forbids is using `implementations/` as a place to
-dump AI output that the learner did not engage with. The test is the same
-as for topic material: if the learner cannot defend the code on a future
-review pass, it does not belong in the durable folder.
+"공동 작성" 허용은 이 커리큘럼이 AI 보조 학습을 명시적으로 전제하기 때문에 존재한다. 세션 내부에서 AI 는 정당한 협업자다. 이 정책이 금지하는 것은, 학습자가 직접 참여하지 않은 AI 출력을 `implementations/` 에 쏟아붓는 일이다. 검증 기준은 학습 자료의 그것과 같다. 학습자가 향후 검토 단계에서 그 코드를 방어할 수 없다면, 그 코드는 영속화 폴더에 속하지 않는다.
 
-One folder per language exists because the curriculum's language rotation
-(Python first, then Java, C, TypeScript) is the explicit unit of progress.
-Re-implementing the same topic in a second language is a checkpoint, and
-the artifact for that checkpoint is the new language folder, not an
-addition to the Python folder.
+언어별로 폴더가 하나씩 따로 있는 이유는, 커리큘럼의 언어 로테이션 (Python 우선, 그다음 Java, C, TypeScript) 자체가 진행 상태의 명시적 단위이기 때문이다. 같은 학습 단위를 두 번째 언어로 다시 구현하는 일은 하나의 체크포인트이며, 그 체크포인트의 산출물은 Python 폴더에 덧붙이는 것이 아니라 새로운 언어 폴더 그 자체다.
 
-### What problem solution code is for
+### 풀이 코드의 역할
 
-`solutions/<topic-slug>/` holds runnable solutions to problem-set
-questions (LeetCode-style or interview-style) that the topic motivates.
+`solutions/<topic-slug>/` 는 학습 단위가 동기를 부여한 문제 세트 (LeetCode 스타일이나 인터뷰 스타일) 의 실행 가능한 풀이를 담는다.
 
-Problem solutions are kept separate from implementation code for two
-reasons:
+풀이 코드를 학습 코드와 분리해 두는 이유는 두 가지다.
 
-1. The per-topic definition of done in [CURRICULUM.md](CURRICULUM.md)
-   counts implementation coverage and problem-solving coverage as
-   independent dimensions. Keeping them in separate folders makes the
-   counts trivially auditable from `PROGRESS.md`.
-2. Problem solutions accumulate per problem, not per language. A single
-   problem may be solved in Python, then re-solved in Java as part of a
-   later language-rotation pass; grouping by topic-slug keeps the
-   different attempts together and avoids forcing the learner to navigate
-   four parallel `solutions/<language>/` trees.
+1. [CURRICULUM.md](CURRICULUM.md) 의 학습 단위별 완료 기준은 구현 커버리지와 문제 풀이 커버리지를 서로 독립된 축으로 센다. 폴더를 분리해 두면 `PROGRESS.md` 에서 이 두 축을 손쉽게 감사할 수 있다.
+2. 풀이는 언어가 아니라 문제 단위로 누적된다. 같은 문제 한 개를 Python 으로 한 번 풀고, 나중에 언어 로테이션 차수에서 Java 로 다시 푸는 일이 흔하다. 학습 단위 슬러그로 묶으면 서로 다른 시도들이 함께 모이고, 학습자가 `solutions/<language>/` 트리 네 개를 평행하게 오가야 하는 부담을 피할 수 있다.
 
-Problem solutions follow the same retention rule as implementation code:
-they are learner-authored or learner-and-AI co-developed study code. A
-pasted answer that the learner did not work through is not a problem
-solution under this policy.
+풀이 코드는 학습 코드와 같은 보존 규칙을 따른다. 학습자 작성 또는 학습자·AI 공동 작성의 학습용 코드여야 한다. 학습자가 직접 풀어보지 않은 채 붙여 넣은 답안은, 이 정책상 풀이 코드가 아니다.
 
-## Implementation artifacts: learner-authored or co-developed, not answer dumps
+## 학습 코드: 학습자 작성 또는 공동 작성이며, 정답 덤프가 아닐 것
 
-The most common way a learning system silently breaks is by accumulating
-code the learner did not actually work through. This policy treats that
-failure mode explicitly.
+학습 시스템이 조용히 망가지는 가장 흔한 방식은, 학습자가 실제로는 거치지 않은 코드가 쌓여가는 것이다. 이 정책은 그 실패 모드를 명시적으로 다룬다.
 
-Implementation artifacts and problem solutions are preserved in their
-canonical folders only when all of the following hold:
+학습 코드와 풀이 코드는 다음 조건을 모두 만족할 때만 표준 폴더에 보존된다.
 
-- **Learner engagement.** The learner stepped through the code during the
-  session - typed it, refactored it, debugged it, or at minimum read it
-  line by line and explained back what each section does. Pure AI output
-  the learner watched scroll past is not engagement.
-- **Defensibility on review.** The learner expects to be able to re-read
-  the file on a later session and reconstruct the reasoning behind the
-  non-obvious lines. If the file has a section the learner cannot explain
-  the day after the session, that section is either reworked or removed
-  before close-out.
-- **Topic fit.** The code exercises the topic the session is studying.
-  Drive-by snippets from unrelated topics ("here is a quick hash map
-  example while we are talking about arrays") are not promoted into the
-  topic's implementation folder.
-- **Runnable as study code.** The file runs in its language without
-  hand-editing and produces an observable result the learner can check
-  against the topic's operation profile. A partial sketch that does not
-  run is left in the session draft, not promoted.
+- **학습자 참여.** 학습자가 세션 중에 그 코드를 거쳤을 것 — 타이핑하거나, 리팩터링하거나, 디버깅하거나, 최소한 한 줄씩 읽으면서 각 섹션이 무엇을 하는지 말로 설명해 봤을 것. 학습자가 그저 스크롤되는 것을 지켜본 순수 AI 출력은 참여로 치지 않는다.
+- **재검토 시 방어 가능성.** 학습자가 나중 세션에서 그 파일을 다시 읽었을 때, 자명하지 않은 줄들 뒤에 깔린 이유를 재구성할 수 있어야 한다. 세션 다음 날 학습자가 설명할 수 없는 부분이 있다면, 그 부분은 마무리 전에 다시 손보거나 제거된다.
+- **학습 단위 적합성.** 코드가 이번 세션이 다루는 학습 단위를 실제로 연습해야 한다. 무관한 학습 단위에서 흘러들어온 스쳐 지나가는 스니펫 ("배열 얘기하다가 잠깐 해시 맵 예시도") 은 학습 단위의 학습 코드 폴더에 승격되지 않는다.
+- **학습용 코드로서 실행 가능할 것.** 파일이 손수 고치지 않고도 해당 언어에서 실행되며, 학습자가 해당 학습 단위의 연산 프로파일과 대조해 확인할 수 있는 관찰 가능한 결과를 낸다. 실행되지 않는 부분 스케치는 세션 초안에 두고 승격하지 않는다.
 
-When a piece of code fails any of these criteria, the close-out path does
-not place it in `implementations/<language>/<topic-slug>/` or in
-`solutions/<topic-slug>/`. It either stays in the session draft and is
-referenced from the session summary, or it is dropped. This is the same
-shape of rule that [TOPIC_FORMAT.md](TOPIC_FORMAT.md) applies to topic
-material promotion: only learner-validated, structure-fitting work is
-preserved.
+이 기준 중 하나라도 만족하지 못하는 코드 조각은, 마무리 경로가 `implementations/<language>/<topic-slug>/` 나 `solutions/<topic-slug>/` 에 올리지 않는다. 그 코드는 세션 초안에 남아 세션 요약에서 참조되거나, 그냥 버려진다. 이는 [TOPIC_FORMAT.md](TOPIC_FORMAT.md) 가 학습 자료 승격에 적용하는 규칙과 같은 형태의 규칙이다. 학습자 검증을 통과하고 구조에 맞는 작업물만 보존한다.
 
-The "learner-and-AI co-developed" allowance is therefore not a loophole.
-AI participation in the session is expected; AI generation that the
-learner did not engage with is the failure mode this rule blocks.
+따라서 "학습자·AI 공동 작성" 허용은 빠져나갈 구멍이 아니다. 세션 내 AI 참여는 전제된 것이며, 학습자가 참여하지 않은 AI 생성물이야말로 이 규칙이 차단하려는 실패 모드다.
 
-## Evidence linking without content duplication
+## 콘텐츠 중복 없이 증거 링크 걸기
 
-Topic material connects to implementation and solution evidence through
-links, not through content duplication. The topic document is the reading
-surface; the runnable folders are the evidence; `PROGRESS.md` is the
-compact index.
+학습 자료는 콘텐츠 중복이 아니라 링크로 학습 코드·풀이 코드 증거에 연결된다. 학습 자료 문서는 읽기 표면이고, 실행 가능한 폴더들은 증거이며, `PROGRESS.md` 는 컴팩트한 색인이다.
 
-### How topic material links to evidence
+### 학습 자료가 증거에 링크 거는 방식
 
-The durable topic document at `docs/topics/<topic-slug>/README.md` carries
-two structural slots defined by [TOPIC_FORMAT.md](TOPIC_FORMAT.md) that
-exist specifically to hold these links:
+`docs/topics/<topic-slug>/README.md` 의 영속 학습 자료 문서는, 이 링크들을 담기 위해 [TOPIC_FORMAT.md](TOPIC_FORMAT.md) 가 정의한 구조적 슬롯 두 개를 가진다.
 
-1. **Language coverage table.** One row per language in the rotation
-   (Python primary, then Java, C, TypeScript), each with a status flag and
-   a link to that language's folder under
-   `implementations/<language>/<topic-slug>/`. The table answers "which
-   languages cover this topic and where is each implementation" without
-   inlining any code.
-2. **Linked artifacts section.** A short list of the implementation files
-   and the problem-solution files that belong to this topic. Each entry is
-   a path link plus, at most, a one-line description of what the file
-   demonstrates. The section is a directory, not a summary; it does not
-   restate what the linked file does beyond the one-line label.
+1. **언어 커버리지 표.** 로테이션 언어마다 한 행 (Python 우선, 이어서 Java, C, TypeScript). 각 행은 상태 플래그와 그 언어의 `implementations/<language>/<topic-slug>/` 폴더 링크를 가진다. 이 표는 "이 학습 단위를 어느 언어들이 커버하며 각 구현은 어디에 있는가" 를 코드 한 줄도 본문에 끼워 넣지 않고 답한다.
+2. **연결된 산출물 섹션.** 이 학습 단위에 속하는 구현 파일과 풀이 파일들의 짧은 목록. 각 항목은 경로 링크와, 길어야 한 줄짜리 파일 설명으로 구성된다. 이 섹션은 디렉터리이지 요약이 아니다. 한 줄 라벨을 넘어서 링크된 파일이 무엇을 하는지 다시 풀어 쓰지 않는다.
 
-When a session promotes new content into the topic document during
-close-out, it updates these two slots to point at the new runnable
-artifacts it created. The five-part teaching structure (core claim,
-rationale, real example, easy example, takeaways) does not absorb the new
-code; it absorbs only the explanatory takeaways that working on that code
-produced.
+세션이 마무리 단계에서 새 콘텐츠를 학습 자료 문서로 승격하면, 새로 만든 실행 가능한 산출물을 가리키도록 이 두 슬롯을 갱신한다. 다섯 부분 교육 구조 (핵심 주장, 근거, 실제 예시, 쉬운 예시, 핵심 정리) 는 새 코드를 흡수하지 않는다. 다만 그 코드를 작업하면서 얻은 설명적 핵심 정리만 흡수한다.
 
-### How `PROGRESS.md` links to evidence
+### `PROGRESS.md` 가 증거에 링크 거는 방식
 
-[PROGRESS.md](PROGRESS.md) carries three evidence fields per started
-topic:
+[PROGRESS.md](PROGRESS.md) 는 시작된 학습 단위마다 세 가지 증거 필드를 가진다.
 
-- **Implementation evidence** points at one file per language under
-  `implementations/<language>/<topic-slug>/`.
-- **Solution evidence** points at the running list under
-  `solutions/<topic-slug>/`, with a count.
-- **Interview / review evidence** points at the answers and mock-interview
-  notes recorded inside `docs/topics/<topic-slug>/README.md` (or
-  `PRACTICE.md` once split) or under `docs/sessions/`, with a count.
+- **구현 증거** 는 `implementations/<language>/<topic-slug>/` 아래 언어별 한 파일을 가리킨다.
+- **풀이 증거** 는 `solutions/<topic-slug>/` 아래의 진행 중 목록과 그 개수를 가리킨다.
+- **인터뷰 / 검토 증거** 는 `docs/topics/<topic-slug>/README.md` (분할 이후라면 `PRACTICE.md`) 내부, 또는 `docs/sessions/` 아래에 기록된 답변과 모의 인터뷰 노트를 개수와 함께 가리킨다.
 
-These three fields are the read-side of the boundary that this policy
-defines on the write-side. They are links, not copies, for the same
-reason the topic document's linked-artifacts section is links: the
-progress document is read at the start of every session, and a document
-that copies its evidence drifts from the evidence over time.
+이 세 필드는 이 정책이 쓰기 쪽에서 정의하는 경계의 읽기 쪽이다. 학습 자료 문서의 연결된 산출물 섹션이 링크인 것과 같은 이유로, 이 필드들도 사본이 아니라 링크다. 진행 상태 문서 (Progress document) 는 모든 세션의 시작 시점에 읽히는 문서이며, 증거를 복제한 문서는 시간이 지날수록 증거에서 멀어지기 때문이다.
 
-### No-duplication rule
+### 중복 금지 규칙
 
-The combination of the rules above produces a single, enforceable
-no-duplication rule:
+위의 규칙들이 결합되어, 강제 가능한 단일한 중복 금지 규칙을 만든다.
 
-- A piece of code exists in exactly one canonical location -
-  `implementations/<language>/<topic-slug>/` for implementation code, or
-  `solutions/<topic-slug>/` for problem-set solutions.
-- A piece of explanatory content exists in exactly one canonical location
-  - the topic document at `docs/topics/<topic-slug>/README.md` (or, once
-  split, `PRACTICE.md`).
-- Everything else that needs to refer to either of the above does so by
-  link. The topic document links to runnable artifacts. `PROGRESS.md`
-  links to all three artifact kinds plus session summaries. Session
-  summaries link to the artifacts the session produced.
+- 코드 한 조각은 정확히 한 표준 위치에만 존재한다. 학습 코드라면 `implementations/<language>/<topic-slug>/` 에, 문제 풀이라면 `solutions/<topic-slug>/` 에.
+- 설명 콘텐츠 한 조각은 정확히 한 표준 위치에만 존재한다. `docs/topics/<topic-slug>/README.md` 의 학습 자료 문서 (분할 이후라면 `PRACTICE.md`).
+- 위의 둘을 가리켜야 하는 모든 다른 것들은 링크로 가리킨다. 학습 자료 문서는 실행 가능한 산출물로 링크를 건다. `PROGRESS.md` 는 세 산출물 종류와 세션 요약 모두에 링크를 건다. 세션 요약은 그 세션이 만들어낸 산출물에 링크를 건다.
 
-A session that finds itself about to paste implementation code into the
-topic document, or about to re-explain a topic in a session summary, is
-applying the boundary backwards and should link to the canonical artifact
-instead.
+학습 자료 문서에 학습 코드를 붙여 넣으려 하고 있거나, 세션 요약에서 학습 단위를 다시 설명하려 하고 있다면, 그 세션은 경계를 뒤집어 적용하고 있는 것이며 대신 표준 산출물로 링크를 걸어야 한다.
 
-## How this document is used
+## 이 문서가 사용되는 방식
 
-- [LEARNING_FLOW.md](LEARNING_FLOW.md) references this policy at step 2 of
-  the close-out path ("place runnable artifacts in their canonical
-  folders") and at step 3 ("record artifact links"). The close-out path
-  uses the three canonical locations and the linking rules defined here.
-- [TOPIC_FORMAT.md](TOPIC_FORMAT.md) references this policy for the
-  language-coverage table and the linked-artifacts section. Those slots
-  hold the links described in "Evidence linking without content
-  duplication" above.
-- [PROGRESS.md](PROGRESS.md) references this policy for its evidence-link
-  boundary. The three evidence fields in `PROGRESS.md` point at the three
-  artifact kinds defined here.
-- [CURRICULUM.md](CURRICULUM.md) references this policy indirectly through
-  its per-topic definition of done: language coverage is satisfied by
-  artifacts under `implementations/<language>/<topic-slug>/`, and
-  problem-solving counts are satisfied by artifacts under
-  `solutions/<topic-slug>/`.
+- [LEARNING_FLOW.md](LEARNING_FLOW.md) 는 마무리 경로의 2단계 ("실행 가능한 산출물을 표준 폴더에 배치") 와 3단계 ("산출물 링크 기록") 에서 이 정책을 참조한다. 마무리 경로는 여기서 정의된 세 표준 위치와 링크 규칙을 사용한다.
+- [TOPIC_FORMAT.md](TOPIC_FORMAT.md) 는 언어 커버리지 표와 연결된 산출물 섹션에 대해 이 정책을 참조한다. 그 슬롯들은 위의 "콘텐츠 중복 없이 증거 링크 걸기" 에서 설명한 링크들을 담는다.
+- [PROGRESS.md](PROGRESS.md) 는 증거 링크 경계에 대해 이 정책을 참조한다. `PROGRESS.md` 의 세 증거 필드는 여기서 정의된 세 산출물 종류를 가리킨다.
+- [CURRICULUM.md](CURRICULUM.md) 는 학습 단위별 완료 기준을 통해 간접적으로 이 정책을 참조한다. 언어 커버리지는 `implementations/<language>/<topic-slug>/` 아래의 산출물로 충족되고, 문제 풀이 개수는 `solutions/<topic-slug>/` 아래의 산출물로 충족된다.
 
-This policy is intentionally stable. Changes to the three artifact kinds,
-their canonical locations, or the no-duplication rule are made
-deliberately and are reflected across `LEARNING_FLOW.md`,
-`TOPIC_FORMAT.md`, and `PROGRESS.md` in a dedicated session, not silently
-during a normal topic close-out.
+이 정책은 의도적으로 안정적이다. 세 산출물 종류, 그 표준 위치, 또는 중복 금지 규칙에 대한 변경은 신중하게 이루어지며, 일반적인 학습 단위 마무리 도중 슬그머니 바뀌는 것이 아니라 별도의 전용 세션에서 `LEARNING_FLOW.md`, `TOPIC_FORMAT.md`, `PROGRESS.md` 전반에 걸쳐 반영된다.
