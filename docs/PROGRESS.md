@@ -104,7 +104,29 @@ summary - the direction of the link is always from this document outward.
 
 ## Current state
 
-No topic has been started yet. The curriculum in
-[CURRICULUM.md](CURRICULUM.md) defines the next topic to begin (Week 1,
-Big O notation and the memory model). The first close-out will create the
-first per-topic row under this section using the fields above.
+**Current week:** Week 1 - Foundations and linear structures.
+**Current topic:** Array.
+
+### Big O notation and the memory model
+
+| Field | Value |
+|-------|-------|
+| Current state | Concept and memory model both covered as of 2026-07-02: complexity-class intuition (O(1), O(n), O(n^2), O(n^3), O(log n), O(n log n)) plus stack/heap, references, and allocation/deallocation. 3/3 code snippets correctly classified by Big O as hands-on practice (after self-correction). This is a prep topic, not a core data structure, so no implementation/problem/interview evidence is expected per its curriculum entry. Checkpoint closed; moving to Array. |
+| Next checkpoint | none - checkpoint closed. |
+| Topic material | [docs/topics/big-o/README.md](topics/big-o/README.md) |
+| Latest session | [2026-07-02 session summary](sessions/2026-07-02-big-o-memory-model-and-practice.md) - 2026-07-02 |
+| Implementation evidence | none yet |
+| Solution evidence | none yet (0 problems solved) |
+| Interview / review evidence | none yet (0 interview-style answers) |
+
+### Array
+
+| Field | Value |
+|-------|-------|
+| Current state | Concept covered as of 2026-07-02. Python implementation covered as of 2026-07-02. Java implementation also covered as of 2026-07-03: `MyArray` class with `data` (fixed-size array) + `size` (used-count) fields, `get`/`set` (O(1)), `insert`/`delete` (O(n)), and `grow()` for capacity doubling; `get`/`set`/`delete` hand-typed by the learner, `insert`/`grow` co-developed and verified by the learner via debugger stepping. Learner stated the Python-vs-Java trade-off unprompted (Java needs manual capacity management via `grow()`; Python's list hides this). No C/TypeScript implementation, no problems solved, no interview-style answers yet. |
+| Next checkpoint | Solve the first Array practice problem end-to-end under `solutions/array/`, with the learner explaining their approach and stating its time complexity. Acceptance criterion: one problem solved and its complexity correctly stated by the learner. |
+| Topic material | [docs/topics/array/README.md](topics/array/README.md) |
+| Latest session | [2026-07-03 session summary](sessions/2026-07-03-array-java-impl.md) - 2026-07-03 |
+| Implementation evidence | [Python](../implementations/python/array/my_array.py), [Java](../implementations/java/array/MyArray.java) |
+| Solution evidence | none yet (0 problems solved) |
+| Interview / review evidence | none yet (0 interview-style answers) |
